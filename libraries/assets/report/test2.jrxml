@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb63c2b4-86bf-4caf-ad52-3217135d2f60">
+	<property name="com.jaspersoft.studio.data.sql.tables" value="dm90ZXJzICwxNSwxNSxiMWYwMjFiZi04MWQyLTQ1YzItODJhMS05MmFhZWIxNDkwMjY7"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="test"/>
+	<parameter name="grade" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT *
+FROM voters where grade_level =  $P{grade} ]]>
+	</queryString>
+	<field name="v_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="v_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="v_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="stud_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="stud_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="stud_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="acad_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="acad_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="acad_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="fname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fname"/>
+		<property name="com.jaspersoft.studio.field.label" value="fname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="lname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lname"/>
+		<property name="com.jaspersoft.studio.field.label" value="lname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="mname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mname"/>
+		<property name="com.jaspersoft.studio.field.label" value="mname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="grade_level" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="grade_level"/>
+		<property name="com.jaspersoft.studio.field.label" value="grade_level"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="strand" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="strand"/>
+		<property name="com.jaspersoft.studio.field.label" value="strand"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="section" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="section"/>
+		<property name="com.jaspersoft.studio.field.label" value="section"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="auth_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="auth_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="auth_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="date_issued" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="date_issued"/>
+		<property name="com.jaspersoft.studio.field.label" value="date_issued"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<field name="password" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="password"/>
+		<property name="com.jaspersoft.studio.field.label" value="password"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="voters"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="da3b8fc8-777e-48a6-a029-dc193a65947b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0d370034-7b44-4994-ad51-22233473537d"/>
+				</reportElement>
+				<text><![CDATA[fname]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="0" width="100" height="20" uuid="8cffa68d-9519-44ce-ae27-bad4e0fea530">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="364558d1-f2f2-4b50-9c6d-dc3ae28df682"/>
+				</reportElement>
+				<text><![CDATA[lname]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="0" width="100" height="20" uuid="1c7a386e-0211-4c4e-a116-a489c65c3f3a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="83c18d99-0292-415f-a24a-1317e7495851"/>
+				</reportElement>
+				<text><![CDATA[mname]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="0" width="100" height="22" uuid="eed909d9-8454-4b88-889c-11627e187169">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="914c659b-a770-4d8d-90ce-1a8cbd0af5de"/>
+				</reportElement>
+				<text><![CDATA[grade_level]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="46" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="50d0beb9-3ef8-4e64-a912-e33dc43f8059">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0d370034-7b44-4994-ad51-22233473537d"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{fname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="0" width="100" height="20" uuid="1b088028-ec8b-44b7-a7cd-44f5c4bc2b84">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="364558d1-f2f2-4b50-9c6d-dc3ae28df682"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{lname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="0" width="100" height="20" uuid="e2d090d0-7aab-4e83-941b-6ac52148a7cb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="83c18d99-0292-415f-a24a-1317e7495851"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{mname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="0" width="100" height="20" uuid="3da5edfd-ec13-4497-9320-9aecc90650a6">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="914c659b-a770-4d8d-90ce-1a8cbd0af5de"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{grade_level}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
