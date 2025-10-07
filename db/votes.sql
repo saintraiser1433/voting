@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `election_title` (
 --
 
 INSERT INTO `election_title` (`id`, `title`, `acad_id`, `date_start`, `date_end`, `is_finished`) VALUES
-(5, 'PPNHS SEGWAYs', 1, '2023-01-01', '2023-01-30', 1),
+(5, 'GIT SEGWAYs', 1, '2023-01-01', '2023-01-30', 1),
 (6, 'SELECTING THE RIGHTEOUS CANDIDATES FOR THE BEST ENVIRONMENT', 8, '2024-12-06', '2024-12-30', 0);
 
 -- --------------------------------------------------------
