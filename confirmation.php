@@ -24,8 +24,8 @@ if (isset($_POST['submits'])) {
 <html>
 
 <head>
-    <title>PPNHS VTS</title>
-    <link rel="icon" href="libraries/img/logo.png" type="image/x-icon">
+    <title>GIT MOBILE BASED VOTING SYSTEM</title>
+    <link rel="icon" href="libraries/img/glanlogo.png" type="image/x-icon">
 
     <link rel="stylesheet" type="text/css" href="libraries\assets\icon\font-awesome\css\font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="libraries\bower_components\bootstrap\css\bootstrap.min.css">

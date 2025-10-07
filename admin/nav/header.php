@@ -1,5 +1,5 @@
 <head>
-    <title>SEAIT VTS</title>
+    <title>GIT MOBILE BASED VOTING SYSTEM</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +8,7 @@
         content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
     <meta name="author" content="#">
     <!-- Favicon icon -->
-    <link rel="icon" href="../libraries/img/logo.png" type="image/x-icon">
+    <link rel="icon" href="../libraries/img/glanlogo.png" type="image/x-icon">
     <!-- Google font-->
     <!-- Required Fremwork -->
     <link rel="stylesheet" type="text/css" href="..\libraries\bower_components\bootstrap\css\bootstrap.min.css">

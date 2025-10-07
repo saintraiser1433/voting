@@ -15,12 +15,12 @@ $output = "
         <link rel='stylesheet' type='text/css' href='libraries\bower_components\bootstrap\css\bootstraps.min.css'>
     </head>
     <body>
-        <img src='../libraries/img/logo.png' width='100px;' height='100px;'>
+        <img src='../libraries/img/glanlogo.png' width='100px;' height='100px;'>
         <div style='margin-top:-100px; text-align:center; font-family:arial; line-height:3px'>
-            <h6>SOUTH EAST ASIAN INSTITUTE OF TECHNOLOGY INC.</h6>
-            <h6>BRGY. CROSSING RUBBER , TUPI , SOUTH COTABATO</h6>
+            <h6>GLAN INSTITUTE OF TECHNOLOGY</h6>
+            <h6>SARANGANI, PHILIPPINES</h6>
              <center><h3 style='font-family:Arial;'>SCHOOL YEAR: " . $rowqq['description'] . " </h3></center>
-             <center><h3 style='font-family:Arial;'>OFFICAL TALLY FOR SEAIT ELECTION " . $rowqq['description'] . " </h3></center> 
+             <center><h3 style='font-family:Arial;'>OFFICAL TALLY FOR GIT ELECTION " . $rowqq['description'] . " </h3></center> 
              
         </div>
 
@@ -132,7 +132,7 @@ if (!$rs) {
 if ($rs->num_rows > 0) {
     $i = 1;
     $output .= "
-        <center><h3 style='font-family:Arial;'>OFFICAL RESULT FOR SEAIT ELECTION 2024 </h3></center> 
+        <center><h3 style='font-family:Arial;'>OFFICAL RESULT FOR GIT ELECTION 2024 </h3></center> 
     ";
     foreach ($rs as $row) {
         if ($row['p_id'] == 0) {

@@ -7,8 +7,8 @@
             </a>
             <a href="index-1.htm">
                   <div class="d-flex justify-content-center align-items-center">
-                    <img class="img-fluid" src="libraries/img/logo.png" alt="Theme-Logo" width="32px" height="32px">
-                 <span class="ml-2">SEAIT VTS</span>
+                    <img class="img-fluid" src="libraries/img/glanlogo.png" alt="Theme-Logo" width="32px" height="32px">
+                 <span class="ml-2">GIT MOBILE BASED VOTING SYSTEM</span>
                 </div>
             </a>
             <a class="mobile-options">
@@ -37,7 +37,7 @@
                 <li class="user-profile header-notification">
                     <div class="dropdown-primary dropdown">
                         <div class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="libraries/img/logo.png" class="img-radius" alt="User-Profile-Image">
+                            <img src="libraries/img/glanlogo.png" class="img-radius" alt="User-Profile-Image">
                             <span class="text-uppercase">
                                 <?php
                                 if (isset($_SESSION['username'])) {

@@ -94,7 +94,7 @@ $acads = $row['description'];
                                                     <div class="row">
 
                                                         <div class="col-lg-5">
-                                                            <img src="libraries/img/logo.png" class="img-fluid"
+                                                            <img src="libraries/img/glanlogo.png" class="img-fluid"
                                                                 style="width:250px; height:250px;">
                                                         </div>
                                                         <div class="col-lg-7 justify-content-lg-center">
