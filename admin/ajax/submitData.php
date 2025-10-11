@@ -16,7 +16,7 @@ try {
     $fname = $_POST['fname'];
     $lname = $_POST['lname'];
     $mname = $_POST['mname'];
-    $gradelevel = $_POST['gradelevel'];
+    $yearlevel = $_POST['yearlevel'];
     $strand = $_POST['strand'];
     $section = $_POST['section'];
     // Create folder name
@@ -66,7 +66,7 @@ try {
             $fname,
             $lname,
             $mname,
-            $gradelevel,
+            $yearlevel,
             $strand,
             $section,
             $authcode,

@@ -14,7 +14,7 @@ if (isset($_POST['submit'])) {
     $stud = $_POST['studid'];
     $pos = $_POST['position'];
     if ($_FILES['files']['name'] == '') {
-        $dirs = "libraries/img/logo.png";
+        $dirs = "libraries/img/glanlogo.png";
     } else {
         $imgfile = $_FILES["files"]["name"];
         $extension = substr($imgfile, strlen($imgfile) - 4, strlen($imgfile));
@@ -158,7 +158,7 @@ $roww =  $rtt->fetch_assoc();
                                             <div class="col-lg-6">
                                                 <div class="card p-2 text-center font-weight-bold">CANDIDATE PROFILE PICTURE</div>
                                                 <center>
-                                                    <img id="ImdID" class="img-fluid rounded-circle" src="../libraries/img/logo.png" alt="Image" style="width:200px; height:200px;">
+                                                    <img id="ImdID" class="img-fluid rounded-circle" src="../libraries/img/glanlogo.png" alt="Image" style="width:200px; height:200px;">
                                                 </center>
                                                 <br><br>
                                                 <div class="form-group">
@@ -191,8 +191,8 @@ $roww =  $rtt->fetch_assoc();
 
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-form-label">Grade Level</label>
-                                                    <input type="text" name="lname" class="form-control text-uppercase" id="gradelevel" readonly>
+                                                    <label class="col-form-label">Year Level</label>
+                                                    <input type="text" name="lname" class="form-control text-uppercase" id="yearlevel" readonly>
                                                 </div>
 
                                                 <div class="form-group">
@@ -377,7 +377,7 @@ $roww =  $rtt->fetch_assoc();
                         if (html.stat == 0) {
                             alert('No result found');
                             $('#fname').val("");
-                            $('#gradelevel').val("");
+                            $('#yearlevel').val("");
                             $('#submits').attr('disabled', true);
                         } else if (html.res == 1) {
                             $('#availability').html('<span class="text-danger">Already Candidate</span>');
@@ -386,7 +386,7 @@ $roww =  $rtt->fetch_assoc();
                         } else {
                             $('#fname').val(html.fname);
 
-                            $('#gradelevel').val("Grade " + html.gr);
+                            $('#yearlevel').val("Year " + html.gr);
                             $('#submits').attr('disabled', false);
                         }
 
@@ -424,7 +424,7 @@ $roww =  $rtt->fetch_assoc();
                             alert('No result found');
                         } else {
                             $('#fname').val(html.fname);
-                            $('#gradelevel').val("Grade " + html.gr);
+                            $('#yearlevel').val("Year " + html.gr);
                         }
 
 

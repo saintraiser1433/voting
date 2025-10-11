@@ -160,7 +160,7 @@ if (isset($_POST['update'])) {
                                                     PICTURE</div>
                                                 <center>
                                                     <img id="ImdID" class="img-fluid rounded-circle"
-                                                        src="../libraries/img/logo.png" alt="Image"
+                                                        src="../libraries/img/glanlogo.png" alt="Image"
                                                         style="width:200px; height:200px;">
                                                 </center>
                                                 <br><br>

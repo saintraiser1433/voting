@@ -180,7 +180,7 @@ if (!isset($_SESSION['at'])) {
                                                         <div class="card-block">
                                                             <div class="row align-items-center">
                                                                 <div class="col">
-                                                                    <h3 class="m-b-5"><b>GRADE LEVEL RESULTS</b></h3>
+                                                                    <h3 class="m-b-5"><b>YEAR LEVEL RESULTS</b></h3>
                                                                 </div>
                                                                 <div class="col col-auto text-right">
                                                                     <i class="feather icon-book f-50 text-c-white"></i>
@@ -198,7 +198,7 @@ if (!isset($_SESSION['at'])) {
                                                             while ($rqq = $rpq->fetch_assoc()) {
                                                             ?>
                                                                 <li class="nav-item">
-                                                                    <a class="nav-link" data-toggle="tab" href="#<?php echo $rqq['grade_level']; ?>" role="tab">Grade <?php echo $rqq['grade_level']; ?></a>
+                                                                    <a class="nav-link" data-toggle="tab" href="#<?php echo $rqq['grade_level']; ?>" role="tab">Year <?php echo $rqq['grade_level']; ?></a>
                                                                 </li>
 
                                                             <?php } ?>

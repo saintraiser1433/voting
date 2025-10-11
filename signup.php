@@ -138,17 +138,15 @@
                                             </div>
                                             <div class="col-lg-6 col-12">
                                                 <div class="form-group">
-                                                    <label class="col-form-label">Grade
+                                                    <label class="col-form-label">Year
                                                         Level</label>
-                                                    <select name="gradelevel" class="form-control" id="gradelevel"
+                                                    <select name="yearlevel" class="form-control" id="yearlevel"
                                                         required>
                                                         <option value=""></option>
-                                                        <option value="7">Grade 7</option>
-                                                        <option value="8">Grade 8</option>
-                                                        <option value="9">Grade 9</option>
-                                                        <option value="10">Grade 10</option>
-                                                        <option value="11">Grade 11</option>
-                                                        <option value="12">Grade 12</option>
+                                                        <option value="1">1st Year</option>
+                                                        <option value="2">2nd Year</option>
+                                                        <option value="3">3rd Year</option>
+                                                        <option value="4">4th Year</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -240,7 +238,7 @@
             });
         });
 
-        $('#gradelevel').on('change', function () {
+        $('#yearlevel').on('change', function () {
             var p = $(this).val();
             $.ajax({
                 url: "admin/ajax/fetchstrand.php",
@@ -269,7 +267,7 @@
             formData.append('fname', $('#fname').val());
             formData.append('lname', $('#lname').val());
             formData.append('mname', $('#mname').val());
-            formData.append('gradelevel', $('#gradelevel').val());
+            formData.append('yearlevel', $('#yearlevel').val());
             formData.append('strand', $('#strand').val());
             formData.append('section', $('#section').val());
 

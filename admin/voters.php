@@ -11,10 +11,10 @@ if (isset($_POST['update'])) {
     $fname = $_POST['fname'];
     $mname = $_POST['mname'];
     $lname = $_POST['lname'];
-    $gradelevel = $_POST['gradelevel'];
+    $yearlevel = $_POST['yearlevel'];
     $strand = $_POST['strand'];
     $section = $_POST['section'];
-    $sql = "UPDATE voters SET fname='$fname',lname='$lname',mname='$mname',grade_level='$gradelevel',strand='$strand',section='$section' where v_id='$vid'";
+    $sql = "UPDATE voters SET fname='$fname',lname='$lname',mname='$mname',grade_level='$yearlevel',strand='$strand',section='$section' where v_id='$vid'";
     if ($conn->query($sql)) {
         $_SESSION['response'] = "Voters successfully updated";
         $_SESSION['type'] = "success";
@@ -161,15 +161,13 @@ if (isset($_GET['re'])) {
                                                 class="form-control text-uppercase" required>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-form-label">Grade Level</label>
-                                            <select name="gradelevel" class="form-control" id="gradelevel" required>
+                                            <label class="col-form-label">Year Level</label>
+                                            <select name="yearlevel" class="form-control" id="yearlevel" required>
                                                 <option value=""></option>
-                                                <option value="7">Grade 7</option>
-                                                <option value="8">Grade 8</option>
-                                                <option value="9">Grade 9</option>
-                                                <option value="10">Grade 10</option>
-                                                <option value="11">Grade 11</option>
-                                                <option value="12">Grade 12</option>
+                                                <option value="1">1st Year</option>
+                                                <option value="2">2nd Year</option>
+                                                <option value="3">3rd Year</option>
+                                                <option value="4">4th Year</option>
                                             </select>
                                         </div>
                                         <div id="content"></div>
@@ -214,8 +212,8 @@ if (isset($_GET['re'])) {
                                                                         <th>#</th>
                                                                         <th>Student ID</th>
                                                                         <th>Full Name</th>
-                                                                        <th>Grade Level</th>
-                                                                        <th>Strand</th>
+                                                                        <th>Year Level</th>
+                                                                        <th>Course</th>
                                                                         <th>Section</th>
                                                                         <th style="display:none"></th>
                                                                         <th>Action</th>
@@ -267,8 +265,8 @@ if (isset($_GET['re'])) {
                                                                         <th>#</th>
                                                                         <th>Student ID</th>
                                                                         <th>Full Name</th>
-                                                                        <th>Grade Level</th>
-                                                                        <th>Strand</th>
+                                                                        <th>Year Level</th>
+                                                                        <th>Course</th>
                                                                         <th>Section</th>
                                                                         <th>Action</th>
                                                                     </tr>
@@ -302,8 +300,8 @@ if (isset($_GET['re'])) {
                                                                         <th>#</th>
                                                                         <th>Student ID</th>
                                                                         <th>Full Name</th>
-                                                                        <th>Grade Level</th>
-                                                                        <th>Strand</th>
+                                                                        <th>Year Level</th>
+                                                                        <th>Course</th>
                                                                         <th>Section</th>
                                                                         <th style="display: none;"></th>
                                                                         <th style="display: none;"></th>
@@ -375,8 +373,8 @@ if (isset($_GET['re'])) {
                                                                         <th>#</th>
                                                                         <th>Student ID</th>
                                                                         <th>Full Name</th>
-                                                                        <th>Grade Level</th>
-                                                                        <th>Strand</th>
+                                                                        <th>Year Level</th>
+                                                                        <th>Course</th>
                                                                         <th>Section</th>
                                                                         <th>Action</th>
                                                                     </tr>
@@ -464,7 +462,7 @@ if (isset($_GET['re'])) {
                 });
             });
 
-            $('#gradelevel').on('change', function () {
+            $('#yearlevel').on('change', function () {
                 var p = $(this).val();
                 $.ajax({
                     url: "ajax/fetchstrand.php",
@@ -504,7 +502,7 @@ if (isset($_GET['re'])) {
                 $('#fname').val(data[6]);
                 $('#mname').val(data[8]);
                 $('#lname').val(data[7]);
-                $('#gradelevel').val(data[2]);
+                $('#yearlevel').val(data[2]);
                 $('#studid').val(data[0]);
                 $('#idhidden').val(data[9]);
                 $('#studid').attr('readonly', 'readonly');

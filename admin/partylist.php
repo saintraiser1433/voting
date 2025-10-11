@@ -13,7 +13,7 @@ if (isset($_POST['submit'])) {
     foreach ($_FILES['files']['name'] as $key => $val) {
     }
     if ($_FILES['files']['tmp_name'][$key] == '') {
-        $dirs = "libraries/img/logo.png";
+        $dirs = "libraries/img/glanlogo.png";
     } else {
         $tmpname = $_FILES['files']['tmp_name'][$key];
         $dir = "../partylistphoto/";
@@ -38,7 +38,7 @@ if (isset($_POST['update'])) {
     foreach ($_FILES['files']['name'] as $key => $val) {
     }
     if ($_FILES['files']['tmp_name'][$key] == '') {
-        $dirs = "libraries/img/logo.png";
+        $dirs = "libraries/img/glanlogo.png";
     } else {
         $tmpname = $_FILES['files']['tmp_name'][$key];
         $dir = "../partylistphoto/";
@@ -138,7 +138,7 @@ if (isset($_POST['update'])) {
                                                     PICTURE</div>
                                                 <center>
                                                     <img id="ImdID" class="img-fluid rounded-circle"
-                                                        src="../libraries/img/logo.png" alt="Image"
+                                                        src="../libraries/img/glanlogo.png" alt="Image"
                                                         style="width:310px; height:310px;">
                                                 </center>
                                                 <br><br>
@@ -190,7 +190,7 @@ if (isset($_POST['update'])) {
 
                                         <center>
                                             <img id="ImdIDs" class="img-fluid rounded-circle"
-                                                src="../libraries/img/logo.png" alt="Image"
+                                                src="../libraries/img/glanlogo.png" alt="Image"
                                                 style="width:310px; height:310px;">
                                             <br><br>
                                             <u>

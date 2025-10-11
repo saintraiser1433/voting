@@ -46,7 +46,7 @@ $row = $rs->fetch_assoc();
                                                 <div class="row text-center">
                                                     <div class="col">
                                                         <h5 class="m-b-5 text-uppercase text-center"><b><img
-                                                                    src="libraries/img/logo.png"
+                                                                    src="libraries/img/glanlogo.png"
                                                                     style="width:60px; height:60px;">
                                                                 <?php echo $row['title'] ?></b></h5>
                                                         <span>Note: Always make sure to click "Preview" Button before

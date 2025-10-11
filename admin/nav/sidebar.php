@@ -40,6 +40,12 @@
                     <span class="pcoded-mtext">Academic Year</span>
                 </a>
             </li>
+            <li class="">
+                <a href="courses.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/education.png"></span>
+                    <span class="pcoded-mtext"> Courses</span>
+                </a>
+            </li>
 
             <li class="">
                 <a href="winners.php">
