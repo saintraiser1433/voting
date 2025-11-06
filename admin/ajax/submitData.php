@@ -19,6 +19,20 @@ try {
     $yearlevel = $_POST['yearlevel'];
     $strand = $_POST['strand'];
     $section = $_POST['section'];
+    
+    // Check for duplicate registration (first name, last name, and middle name combination)
+    // Remove spaces from names for comparison (e.g., "john rey" = "johnrey")
+    $checkStmt = $conn->prepare("SELECT COUNT(*) as count FROM voters WHERE REPLACE(UPPER(TRIM(fname)), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '') AND REPLACE(UPPER(TRIM(lname)), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '') AND REPLACE(UPPER(TRIM(mname)), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '')");
+    $checkStmt->bind_param("sss", $fname, $lname, $mname);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    $checkRow = $checkResult->fetch_assoc();
+    $checkStmt->close();
+    
+    if ($checkRow['count'] > 0) {
+        throw new Exception("Registration failed! A user with the same first name, last name, and middle name already exists.");
+    }
+    
     // Create folder name
     $fullname = $lname . "," . $fname . " " . $mname[0];
 
