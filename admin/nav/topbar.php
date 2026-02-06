@@ -5,12 +5,11 @@
             <a class="mobile-menu" id="mobile-collapse" href="#!">
                 <i class="feather icon-menu"></i>
             </a>
-            <a href="index-1.htm">
+            <a href="dashboard.php">
                 <div class="d-flex justify-content-center align-items-center">
                     <img class="img-fluid" src="../libraries/img/glanlogo.png" alt="Theme-Logo" width="32px" height="32px">
-                 <span class="ml-2">GIT MOBILE BASED VOTING SYSTEM</span>
+                    <span class="ml-2">GIT MOBILE BASED VOTING SYSTEM</span>
                 </div>
-                
             </a>
             <a class="mobile-options">
                 <i class="feather icon-more-horizontal"></i>
@@ -32,6 +31,19 @@
                     <a href="#!" onclick="javascript:toggleFullScreen()">
                         <i class="feather icon-maximize full-screen"></i>
                     </a>
+                </li>
+                <?php $mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general'; ?>
+                <li class="ml-3">
+                    <div class="btn-group" role="group" aria-label="Mode switch">
+                        <a href="switch_mode.php?mode=general"
+                           class="btn btn-sm <?php echo $mode === 'general' ? 'btn-primary' : 'btn-outline-primary'; ?>">
+                            General Voting
+                        </a>
+                        <a href="switch_mode.php?mode=department"
+                           class="btn btn-sm <?php echo $mode === 'department' ? 'btn-primary' : 'btn-outline-primary'; ?>">
+                            Department Voting
+                        </a>
+                    </div>
                 </li>
             </ul>
             <ul class="nav-right">

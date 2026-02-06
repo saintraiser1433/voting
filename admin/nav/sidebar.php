@@ -1,5 +1,6 @@
 <nav class="pcoded-navbar">
     <div class="pcoded-inner-navbar main-menu">
+        <?php $mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general'; ?>
         <div class="pcoded-navigatio-lavel">Reports</div>
         <ul class="pcoded-item pcoded-left-item">
             <li class="">
@@ -8,51 +9,85 @@
                     <span class="pcoded-mtext">Dashboard</span>
                 </a>
             </li>
+
             <div class="pcoded-navigatio-lavel">Manage</div>
 
-            <li class="">
-                <a href="voters.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/handshake.png"></span>
-                    <span class="pcoded-mtext">Voters</span>
-                </a>
-            </li>
-            <li class="">
-                <a href="partylist.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/exam.png"></span>
-                    <span class="pcoded-mtext">Partylist</span>
-                </a>
-            </li>
-            <li class="">
-                <a href="independent.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/motivate.png"></span>
-                    <span class="pcoded-mtext">Independent</span>
-                </a>
-            </li>
-            <li class="">
-                <a href="position.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/top-three.png"></span>
-                    <span class="pcoded-mtext">Position</span>
-                </a>
-            </li>
-            <li class="">
-                <a href="sessionyear.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/calendar.png"></span>
-                    <span class="pcoded-mtext">Academic Year</span>
-                </a>
-            </li>
-            <li class="">
-                <a href="courses.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/education.png"></span>
-                    <span class="pcoded-mtext"> Courses</span>
-                </a>
-            </li>
+            <?php if ($mode === 'department') { ?>
+                <li class="">
+                    <a href="voters.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/handshake.png"></span>
+                        <span class="pcoded-mtext">Voters</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="departments.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/business-report.png"></span>
+                        <span class="pcoded-mtext">Departments</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="department_candidates.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/motivate.png"></span>
+                        <span class="pcoded-mtext">Department Candidates</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="position.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/top-three.png"></span>
+                        <span class="pcoded-mtext">Positions</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="courses.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/education.png"></span>
+                        <span class="pcoded-mtext">Courses</span>
+                    </a>
+                </li>
+            <?php } else { ?>
+                <li class="">
+                    <a href="voters.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/handshake.png"></span>
+                        <span class="pcoded-mtext">Voters</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="partylist.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/exam.png"></span>
+                        <span class="pcoded-mtext">Partylist</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="independent.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/motivate.png"></span>
+                        <span class="pcoded-mtext">Independent</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="position.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/top-three.png"></span>
+                        <span class="pcoded-mtext">Position</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="sessionyear.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/calendar.png"></span>
+                        <span class="pcoded-mtext">Academic Year</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="courses.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/education.png"></span>
+                        <span class="pcoded-mtext">Courses</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="winners.php">
+                        <span class="pcoded-micon"><img src="../libraries/img/calendar.png"></span>
+                        <span class="pcoded-mtext">Results</span>
+                    </a>
+                </li>
+            <?php } ?>
 
-            <li class="">
-                <a href="winners.php">
-                    <span class="pcoded-micon"><img src="../libraries/img/calendar.png"></span>
-                    <span class="pcoded-mtext">Results</span>
-                </a>
-            </li>
             <div class="pcoded-navigatio-lavel">Settings</div>
             <li class="">
                 <a href="ballot.php">
@@ -78,7 +113,6 @@
                     <span class="pcoded-mtext">Archives</span>
                 </a>
             </li>
-
 
         </ul>
     </div>

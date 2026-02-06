@@ -5,14 +5,22 @@ if (!isset($_SESSION['at'])) {
     header("Location:logout.php");
 }
 
+// Determine current mode: general or department
+$mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general';
+$ptype = ($mode === 'department') ? 'department' : 'general';
+
 if (isset($_POST['submits'])) {
     $description = $_POST['position'];
     $maxvote = $_POST['maxvote'];
-    $sql = "SELECT * FROM position ORDER BY priority DESC LIMIT 1";
+    $sql = "SELECT * FROM position WHERE acad_id='$acad' AND election_type='$ptype' ORDER BY priority DESC LIMIT 1";
     $query = $conn->query($sql);
-    $row = $query->fetch_assoc();
-    $priority = $row['priority'] + 1;
-    $sql = "INSERT INTO position (description, max_vote,acad_id, priority) VALUES ('$description', '$maxvote', '$acad','$priority')";
+    if ($query && $query->num_rows > 0) {
+        $row = $query->fetch_assoc();
+        $priority = $row['priority'] + 1;
+    } else {
+        $priority = 1;
+    }
+    $sql = "INSERT INTO position (description, max_vote, acad_id, priority, election_type) VALUES ('$description', '$maxvote', '$acad', '$priority', '$ptype')";
     if ($conn->query($sql)) {
         $_SESSION['response'] = "Position successfully added";
         $_SESSION['type'] = "success";
@@ -179,7 +187,8 @@ if (isset($_POST['update'])) {
                                                         <div class="card-block">
                                                             <div class="row align-items-center">
                                                                 <div class="col">
-                                                                    <h3 class="m-b-5"><b>MANAGE POSITION</b></h3>
+                                                                    <h3 class="m-b-5"><b>MANAGE POSITION
+                                                                            (<?php echo strtoupper($ptype); ?>)</b></h3>
                                                                 </div>
                                                                 <div class="col col-auto text-right">
                                                                     <button type="button"
@@ -209,7 +218,7 @@ if (isset($_POST['update'])) {
                                                                 <tbody>
                                                                     <?php
                                                                     $i = 1;
-                                                                    $sql = "SELECT * FROM position where acad_id='$acad' order by priority asc";
+                                                                    $sql = "SELECT * FROM position WHERE acad_id='$acad' AND election_type='$ptype' ORDER BY priority ASC";
                                                                     $rs = $conn->query($sql);
                                                                     while ($row = $rs->fetch_assoc()) {
 

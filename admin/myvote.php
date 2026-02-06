@@ -136,7 +136,12 @@ if (!isset($_SESSION['at'])) {
 
                                                                 <div class="col-md-12">
                                                                     <?php
-                                                                    $sql = "SELECT * FROM candidate LEFT JOIN voters ON candidate.stud_id=voters.stud_id LEFT JOIN partylist ON candidate.p_id=partylist.p_id WHERE candidate.pos_id = '" . $row['pos_id'] . "'";
+                                                                    // Show only GENERAL candidates in this general results view
+                                                                    $sql = "SELECT * FROM candidate 
+                                                                            LEFT JOIN voters ON candidate.stud_id=voters.stud_id 
+                                                                            LEFT JOIN partylist ON candidate.p_id=partylist.p_id 
+                                                                            WHERE candidate.pos_id = '" . $row['pos_id'] . "' 
+                                                                              AND (candidate.election_type='general' OR candidate.election_type IS NULL)";
                                                                     $cquery = $conn->query($sql);
                                                                     while ($rowt = $cquery->fetch_assoc()) {
                                                                         if ($rowt['p_id'] == 0) {

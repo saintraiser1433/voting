@@ -2,10 +2,14 @@
 session_start();
 $conn = new mysqli("localhost", "root", "", "votes");
 
-
 $query = "SELECT * from acad_tbl where status = 1";
 $result = $conn->query($query);
 $row = $result->fetch_assoc();
 if (!isset($_SESSION['acad'])) {
-	$_SESSION['acad'] = $row['acad_id'];
+    $_SESSION['acad'] = $row['acad_id'];
+}
+
+// Admin mode for sidebar/menu behaviour: 'general' (default) or 'department'
+if (!isset($_SESSION['admin_mode'])) {
+    $_SESSION['admin_mode'] = 'general';
 }

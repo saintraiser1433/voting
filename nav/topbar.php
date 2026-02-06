@@ -32,6 +32,19 @@
                         <i class="feather icon-maximize full-screen"></i>
                     </a>
                 </li>
+                <?php $current_page = basename($_SERVER['PHP_SELF']); ?>
+                <li class="<?php echo ($current_page === 'home.php' ? 'active' : ''); ?>">
+                    <a href="home.php">
+                        <i class="feather icon-home"></i>
+                        <span class="ml-1">General Voting</span>
+                    </a>
+                </li>
+                <li class="<?php echo ($current_page === 'department_home.php' ? 'active' : ''); ?>">
+                    <a href="department_home.php">
+                        <i class="feather icon-layers"></i>
+                        <span class="ml-1">Department Voting</span>
+                    </a>
+                </li>
             </ul>
             <ul class="nav-right">
                 <li class="user-profile header-notification">

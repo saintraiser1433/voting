@@ -46,7 +46,12 @@ if ($rsx->num_rows > 0) {
         UPPER(voters.fname)
     ) AS fname,
     c_id
-         FROM candidate LEFT JOIN voters ON candidate.stud_id=voters.stud_id LEFT JOIN partylist ON candidate.p_id=partylist.p_id WHERE candidate.acad_id='$acad' and candidate.pos_id = $dt";
+         FROM candidate 
+         LEFT JOIN voters ON candidate.stud_id=voters.stud_id 
+         LEFT JOIN partylist ON candidate.p_id=partylist.p_id 
+         WHERE candidate.acad_id='$acad' 
+           AND candidate.pos_id = $dt
+           AND (candidate.election_type='general' OR candidate.election_type IS NULL)";
         $rxc = $conn->query($sqlb);
         if ($rxc->num_rows > 0) {
             foreach ($rxc as $rowt) {
@@ -100,7 +105,9 @@ LEFT JOIN (
 ) vt ON
     vt.candidate_id = c.c_id
 WHERE
-    c.acad_id = $acad AND (
+    c.acad_id = $acad 
+    AND (c.election_type='general' OR c.election_type IS NULL)
+    AND (
         SELECT
             COUNT(*)
         FROM

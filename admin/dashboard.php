@@ -10,7 +10,11 @@ $rs = $conn->query($sel);
 $row = $rs->fetch_assoc();
 $acads = $row['description'];
 
+// Admin mode: general or department
+$mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general';
 
+// Selected department for department results (if any)
+$selectedDept = isset($_GET['dept_id']) ? (int) $_GET['dept_id'] : 0;
 ?>
 
 <!DOCTYPE html>
@@ -77,164 +81,256 @@ $acads = $row['description'];
 
                                             <!-- statustic-card start -->
                                             <?php
-
                                             $sql = "SELECT * FROM election_title where acad_id = '$acad' and is_finished = 0";
                                             $rss = $conn->query($sql);
-                                            if ($rss->num_rows > 0) { ?>
-                                                <div id="ps"></div>
-                                                <div class="col-xl-12 col-md-12">
-                                                    <div class="card">
-                                                        <div class="card bg-c-green text-white">
-                                                            <div class="card-block">
-                                                                <div class="row align-items-center">
-                                                                    <div class="col">
-                                                                        <h3 class="m-b-5"><b>YEAR LEVEL RESULTS</b></h3>
-                                                                    </div>
-                                                                    <div class="col col-auto text-right">
-                                                                        <i class="feather icon-book f-50 text-c-white"></i>
+                                            if ($rss->num_rows > 0) {
+                                                if ($mode === 'department') {
+                                                    // Department voting mode: show department results selector
+                                                    ?>
+                                                    <div class="col-xl-12 col-md-12">
+                                                        <div class="card">
+                                                            <div class="card bg-c-green text-white">
+                                                                <div class="card-block">
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col">
+                                                                            <h3 class="m-b-5"><b>DEPARTMENT RESULTS</b></h3>
+                                                                            <span>View results per department for department voting</span>
+                                                                        </div>
+                                                                        <div class="col col-auto text-right">
+                                                                            <i class="feather icon-book f-50 text-c-white"></i>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-
-
-                                                        <div class="card-block-big">
-                                                            <ul class="nav nav-tabs  tabs" role="tablist">
-                                                                <?php
-                                                                $stq = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
-                                                                $rpq = $conn->query($stq);
-                                                                while ($rqq = $rpq->fetch_assoc()) {
-                                                                    ?>
-                                                                    <li class="nav-item">
-                                                                        <a class="nav-link" data-toggle="tab"
-                                                                            href="#<?php echo $rqq['grade_level']; ?>"
-                                                                            role="tab">Year
-                                                                            <?php echo $rqq['grade_level']; ?></a>
-                                                                    </li>
-
-                                                                <?php } ?>
-                                                            </ul>
-                                                            <!-- Tab panes -->
-                                                            <div class="tab-content tabs card-block">
-                                                                <?php
-                                                                $stq1 = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
-                                                                $rpq1 = $conn->query($stq1);
-                                                                while ($rqq1 = $rpq1->fetch_assoc()) {
-                                                                    $gr = $rqq1['grade_level'];
-
-                                                                    echo ' <div class="tab-pane" id="' . $rqq1['grade_level'] . '" role="tabpanel">';
-                                                                    $stq = "SELECT * FROM voters where  acad_id='$acad' and grade_level='$gr' group by section,strand";
-                                                                    $ss = $conn->query($stq);
-                                                                    while ($myrow = $ss->fetch_assoc()) {
-                                                                        $sec = $myrow['section'];
-                                                                        $str = $myrow['strand'];
-                                                                        $sqlt = "SELECT * FROM voters where acad_id='$acad' and grade_level='$gr' and section='$sec' and strand='$str'";
-                                                                        $rsqlt = $conn->query($sqlt);
-                                                                        $sqlovr = "SELECT * FROM voters INNER JOIN vote ON voters.v_id=vote.voter_id where voters.grade_level='$gr' and voters.acad_id='$acad' and voters.section='$sec' and voters.strand='$str' group by voters.section,voters.strand";
-                                                                        $rsqltq = $conn->query($sqlovr);
-                                                                        $finalt1 = 0;
-                                                                        $from11 = $rsqltq->num_rows;
-                                                                        $to11 = $rsqlt->num_rows;
-                                                                        $finalt1 = $from11 / $to11 * 100;
-
-                                                                        $roundt2 = round($finalt1, 2);
-                                                                        if ($roundt2 == 0) {
-                                                                            $me = 0;
-                                                                        } else if ($roundt2 >= 0 && $roundt2 <= 10.99) {
-                                                                            $me = 10;
-                                                                        } else if ($roundt2 >= 11.00 && $roundt2 <= 20.99) {
-                                                                            $me = 20;
-                                                                        } else if ($roundt2 >= 21.00 && $roundt2 <= 30.99) {
-                                                                            $me = 30;
-                                                                        } else if ($roundt2 >= 31.00 && $roundt2 <= 40.99) {
-                                                                            $me = 40;
-                                                                        } else if ($roundt2 >= 41.00 && $roundt2 <= 50.99) {
-                                                                            $me = 50;
-                                                                        } else if ($roundt2 >= 51.00 && $roundt2 <= 60.99) {
-                                                                            $me = 60;
-                                                                        } else if ($roundt2 >= 61.00 && $roundt2 <= 70.99) {
-                                                                            $me = 70;
-                                                                        } else if ($roundt2 >= 71.00 && $roundt2 <= 80.99) {
-                                                                            $me = 80;
-                                                                        } else if ($roundt2 >= 81.00 && $roundt2 <= 90.99) {
-                                                                            $me = 90;
-                                                                        } else if ($roundt2 >= 91.00 && $roundt2 <= 100.00) {
-                                                                            $me = 100;
+                                                            <div class="card-block-big">
+                                                                <form method="get" class="form-inline mb-3">
+                                                                    <label class="mr-2">Department:</label>
+                                                                    <select name="dept_id" class="form-control mr-2" onchange="this.form.submit()">
+                                                                        <?php
+                                                                        $dsql = "SELECT department_id, department_name FROM departments WHERE acad_id='$acad' AND status=1 ORDER BY department_name ASC";
+                                                                        $drs = $conn->query($dsql);
+                                                                        if ($drs && $drs->num_rows > 0) {
+                                                                            if ($selectedDept === 0) {
+                                                                                $first = $drs->fetch_assoc();
+                                                                                $selectedDept = (int) $first['department_id'];
+                                                                                // rewind pointer for loop
+                                                                                $drs = $conn->query($dsql);
+                                                                            }
+                                                                            while ($drow = $drs->fetch_assoc()) {
+                                                                                $sel = ($selectedDept == (int) $drow['department_id']) ? 'selected' : '';
+                                                                                echo '<option value="' . $drow['department_id'] . '" ' . $sel . '>' . htmlspecialchars($drow['department_name']) . '</option>';
+                                                                            }
+                                                                        } else {
+                                                                            echo '<option value="">No departments</option>';
                                                                         }
-
-                                                                        echo '
-                                                                <div style="font-size:11px;" data-label="' . $roundt2 . '%" class="radial-bar radial-bar-' . $me . ' radial-bar-md radial-bar-success"><br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u><a href="myvote.php?gr=' . $gr . '&sec=' . $sec . '&str=' . $str . '" style="margin-top:500px;""><span style="font-size:11px;">' . $myrow['strand'] . " " . $myrow['section'] . '</span></a></u>  </div> 
-                                                           
-                                                                ';
+                                                                        ?>
+                                                                    </select>
+                                                                </form>
+                                                                <?php
+                                                                if ($selectedDept > 0) {
+                                                                    $resSql = "
+                                                                        SELECT 
+                                                                            c.c_id,
+                                                                            pos.description AS position_name,
+                                                                            pos.priority,
+                                                                            CONCAT(UPPER(v.lname), ', ', UPPER(v.fname)) AS candidate_name,
+                                                                            COUNT(DISTINCT dv.voter_id) AS totalvote
+                                                                        FROM candidate c
+                                                                        INNER JOIN voters v ON c.stud_id = v.stud_id
+                                                                        INNER JOIN position pos ON c.pos_id = pos.pos_id
+                                                                        LEFT JOIN department_vote dv 
+                                                                            ON dv.candidate_id = c.c_id 
+                                                                            AND dv.acad_id = '$acad'
+                                                                            AND dv.department_id = '$selectedDept'
+                                                                        WHERE c.acad_id = '$acad'
+                                                                          AND c.election_type = 'department'
+                                                                          AND c.department_id = '$selectedDept'
+                                                                        GROUP BY c.c_id, pos.pos_id
+                                                                        ORDER BY pos.priority ASC, totalvote DESC
+                                                                    ";
+                                                                    $res = $conn->query($resSql);
+                                                                    if ($res && $res->num_rows > 0) {
+                                                                        $currentPos = '';
+                                                                        echo '<div class="table-responsive"><table class="table table-bordered table-striped">';
+                                                                        echo '<thead><tr><th>Position</th><th>Candidate</th><th>Votes</th></tr></thead><tbody>';
+                                                                        while ($r = $res->fetch_assoc()) {
+                                                                            echo '<tr>';
+                                                                            echo '<td class="text-uppercase">' . htmlspecialchars($r['position_name']) . '</td>';
+                                                                            echo '<td class="text-uppercase">' . htmlspecialchars($r['candidate_name']) . '</td>';
+                                                                            echo '<td>' . (int) $r['totalvote'] . '</td>';
+                                                                            echo '</tr>';
+                                                                        }
+                                                                        echo '</tbody></table></div>';
+                                                                    } else {
+                                                                        echo '<p>No department votes yet for this department.</p>';
                                                                     }
-                                                                    echo '
-                                                            </div>';
+                                                                } else {
+                                                                    echo '<p>No department selected.</p>';
                                                                 }
                                                                 ?>
-
-                                                                <?php
-                                                                $stq1 = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
-                                                                $rpq1 = $conn->query($stq1);
-                                                                if ($rqq1 = $rpq1->fetch_assoc()) {
-                                                                    $gr = $rqq1['grade_level'];
-
-                                                                    echo ' <div class="tab-pane active" id="' . $rqq1['grade_level'] . '" role="tabpanel">';
-                                                                    $stq = "SELECT * FROM voters where  acad_id='$acad' and  grade_level='$gr' group by section,strand";
-                                                                    $ss = $conn->query($stq);
-                                                                    while ($myrow = $ss->fetch_assoc()) {
-                                                                        $sec = $myrow['section'];
-                                                                        $str = $myrow['strand'];
-                                                                        $sqlt = "SELECT * FROM voters where acad_id='$acad' and  grade_level='$gr' and section='$sec' and strand='$str'";
-                                                                        $rsqlt = $conn->query($sqlt);
-                                                                        $sqlovr = "SELECT * FROM voters INNER JOIN vote ON voters.v_id=vote.voter_id where voters.grade_level='$gr' and voters.acad_id='$acad' and voters.section='$sec' and voters.strand='$str' group by voters.section";
-                                                                        $rsqltq = $conn->query($sqlovr);
-                                                                        $finalt1 = 0;
-                                                                        $from11 = $rsqltq->num_rows;
-                                                                        $to11 = $rsqlt->num_rows;
-                                                                        $finalt1 = $from11 / $to11 * 100;
-                                                                        $roundt2 = round($finalt1);
-                                                                        if ($roundt2 == 0) {
-                                                                            $me = 0;
-                                                                        } else if ($roundt2 >= 0 && $roundt2 <= 10.99) {
-                                                                            $me = 10;
-                                                                        } else if ($roundt2 >= 11.00 && $roundt2 <= 20.99) {
-                                                                            $me = 20;
-                                                                        } else if ($roundt2 >= 21.00 && $roundt2 <= 30.99) {
-                                                                            $me = 30;
-                                                                        } else if ($roundt2 >= 31.00 && $roundt2 <= 40.99) {
-                                                                            $me = 40;
-                                                                        } else if ($roundt2 >= 41.00 && $roundt2 <= 50.99) {
-                                                                            $me = 50;
-                                                                        } else if ($roundt2 >= 51.00 && $roundt2 <= 60.99) {
-                                                                            $me = 60;
-                                                                        } else if ($roundt2 >= 61.00 && $roundt2 <= 70.99) {
-                                                                            $me = 70;
-                                                                        } else if ($roundt2 >= 71.00 && $roundt2 <= 80.99) {
-                                                                            $me = 80;
-                                                                        } else if ($roundt2 >= 81.00 && $roundt2 <= 90.99) {
-                                                                            $me = 90;
-                                                                        } else if ($roundt2 >= 91.00 && $roundt2 <= 100.00) {
-                                                                            $me = 100;
-                                                                        }
-
-
-                                                                        echo '
-                                                                <div style="font-size:11px;" data-label="' . $roundt2 . '%" class="radial-bar radial-bar-' . $me . ' radial-bar-md radial-bar-success"><br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u><a href="myvote.php?gr=' . $gr . '&sec=' . $sec . '&str=' . $str . '" style="margin-top:500px;""><span style="font-size:10px;">' . $myrow['strand'] . " " . $myrow['section'] . '</span></a></u>  </div> 
-                                                           
-                                                                ';
-                                                                    }
-                                                                    echo '
-                                                            </div>';
-                                                                }
-                                                                ?>
-
-
-
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            <?php } else { ?>
+                                                    <?php
+                                                } else {
+                                                    // Original general dashboard (year level results)
+                                                    ?>
+                                                    <div id="ps"></div>
+                                                    <div class="col-xl-12 col-md-12">
+                                                        <div class="card">
+                                                            <div class="card bg-c-green text-white">
+                                                                <div class="card-block">
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col">
+                                                                            <h3 class="m-b-5"><b>YEAR LEVEL RESULTS</b></h3>
+                                                                        </div>
+                                                                        <div class="col col-auto text-right">
+                                                                            <i class="feather icon-book f-50 text-c-white"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="card-block-big">
+                                                                <ul class="nav nav-tabs  tabs" role="tablist">
+                                                                    <?php
+                                                                    $stq = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
+                                                                    $rpq = $conn->query($stq);
+                                                                    while ($rqq = $rpq->fetch_assoc()) {
+                                                                        ?>
+                                                                        <li class="nav-item">
+                                                                            <a class="nav-link" data-toggle="tab"
+                                                                                href="#<?php echo $rqq['grade_level']; ?>"
+                                                                                role="tab">Year
+                                                                                <?php echo $rqq['grade_level']; ?></a>
+                                                                        </li>
+
+                                                                    <?php } ?>
+                                                                </ul>
+                                                                <!-- Tab panes -->
+                                                                <div class="tab-content tabs card-block">
+                                                                    <?php
+                                                                    $stq1 = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
+                                                                    $rpq1 = $conn->query($stq1);
+                                                                    while ($rqq1 = $rpq1->fetch_assoc()) {
+                                                                        $gr = $rqq1['grade_level'];
+
+                                                                        echo ' <div class="tab-pane" id="' . $rqq1['grade_level'] . '" role="tabpanel">';
+                                                                        $stq = "SELECT * FROM voters where  acad_id='$acad' and grade_level='$gr' group by section,strand";
+                                                                        $ss = $conn->query($stq);
+                                                                        while ($myrow = $ss->fetch_assoc()) {
+                                                                            $sec = $myrow['section'];
+                                                                            $str = $myrow['strand'];
+                                                                            $sqlt = "SELECT * FROM voters where acad_id='$acad' and grade_level='$gr' and section='$sec' and strand='$str'";
+                                                                            $rsqlt = $conn->query($sqlt);
+                                                                            $sqlovr = "SELECT * FROM voters INNER JOIN vote ON voters.v_id=vote.voter_id where voters.grade_level='$gr' and voters.acad_id='$acad' and voters.section='$sec' and voters.strand='$str' group by voters.section,voters.strand";
+                                                                            $rsqltq = $conn->query($sqlovr);
+                                                                            $finalt1 = 0;
+                                                                            $from11 = $rsqltq->num_rows;
+                                                                            $to11 = $rsqlt->num_rows;
+                                                                            $finalt1 = $from11 / $to11 * 100;
+
+                                                                            $roundt2 = round($finalt1, 2);
+                                                                            if ($roundt2 == 0) {
+                                                                                $me = 0;
+                                                                            } else if ($roundt2 >= 0 && $roundt2 <= 10.99) {
+                                                                                $me = 10;
+                                                                            } else if ($roundt2 >= 11.00 && $roundt2 <= 20.99) {
+                                                                                $me = 20;
+                                                                            } else if ($roundt2 >= 21.00 && $roundt2 <= 30.99) {
+                                                                                $me = 30;
+                                                                            } else if ($roundt2 >= 31.00 && $roundt2 <= 40.99) {
+                                                                                $me = 40;
+                                                                            } else if ($roundt2 >= 41.00 && $roundt2 <= 50.99) {
+                                                                                $me = 50;
+                                                                            } else if ($roundt2 >= 51.00 && $roundt2 <= 60.99) {
+                                                                                $me = 60;
+                                                                            } else if ($roundt2 >= 61.00 && $roundt2 <= 70.99) {
+                                                                                $me = 70;
+                                                                            } else if ($roundt2 >= 71.00 && $roundt2 <= 80.99) {
+                                                                                $me = 80;
+                                                                            } else if ($roundt2 >= 81.00 && $roundt2 <= 90.99) {
+                                                                                $me = 90;
+                                                                            } else if ($roundt2 >= 91.00 && $roundt2 <= 100.00) {
+                                                                                $me = 100;
+                                                                            }
+
+                                                                            echo '
+                                                                    <div style="font-size:11px;" data-label="' . $roundt2 . '%" class="radial-bar radial-bar-' . $me . ' radial-bar-md radial-bar-success"><br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u><a href="myvote.php?gr=' . $gr . '&sec=' . $sec . '&str=' . $str . '" style="margin-top:500px;""><span style="font-size:11px;">' . $myrow['strand'] . " " . $myrow['section'] . '</span></a></u>  </div> 
+                                                               
+                                                                    ';
+                                                                        }
+                                                                        echo '
+                                                                </div>';
+                                                                    }
+                                                                    ?>
+
+                                                                    <?php
+                                                                    $stq1 = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
+                                                                    $rpq1 = $conn->query($stq1);
+                                                                    if ($rqq1 = $rpq1->fetch_assoc()) {
+                                                                        $gr = $rqq1['grade_level'];
+
+                                                                        echo ' <div class="tab-pane active" id="' . $rqq1['grade_level'] . '" role="tabpanel">';
+                                                                        $stq = "SELECT * FROM voters where  acad_id='$acad' and  grade_level='$gr' group by section,strand";
+                                                                        $ss = $conn->query($stq);
+                                                                        while ($myrow = $ss->fetch_assoc()) {
+                                                                            $sec = $myrow['section'];
+                                                                            $str = $myrow['strand'];
+                                                                            $sqlt = "SELECT * FROM voters where acad_id='$acad' and  grade_level='$gr' and section='$sec' and strand='$str'";
+                                                                            $rsqlt = $conn->query($sqlt);
+                                                                            $sqlovr = "SELECT * FROM voters INNER JOIN vote ON voters.v_id=vote.voter_id where voters.grade_level='$gr' and voters.acad_id='$acad' and voters.section='$sec' and voters.strand='$str' group by voters.section";
+                                                                            $rsqltq = $conn->query($sqlovr);
+                                                                            $finalt1 = 0;
+                                                                            $from11 = $rsqltq->num_rows;
+                                                                            $to11 = $rsqlt->num_rows;
+                                                                            $finalt1 = $from11 / $to11 * 100;
+                                                                            $roundt2 = round($finalt1);
+                                                                            if ($roundt2 == 0) {
+                                                                                $me = 0;
+                                                                            } else if ($roundt2 >= 0 && $roundt2 <= 10.99) {
+                                                                                $me = 10;
+                                                                            } else if ($roundt2 >= 11.00 && $roundt2 <= 20.99) {
+                                                                                $me = 20;
+                                                                            } else if ($roundt2 >= 21.00 && $roundt2 <= 30.99) {
+                                                                                $me = 30;
+                                                                            } else if ($roundt2 >= 31.00 && $roundt2 <= 40.99) {
+                                                                                $me = 40;
+                                                                            } else if ($roundt2 >= 41.00 && $roundt2 <= 50.99) {
+                                                                                $me = 50;
+                                                                            } else if ($roundt2 >= 51.00 && $roundt2 <= 60.99) {
+                                                                                $me = 60;
+                                                                            } else if ($roundt2 >= 61.00 && $roundt2 <= 70.99) {
+                                                                                $me = 70;
+                                                                            } else if ($roundt2 >= 71.00 && $roundt2 <= 80.99) {
+                                                                                $me = 80;
+                                                                            } else if ($roundt2 >= 81.00 && $roundt2 <= 90.99) {
+                                                                                $me = 90;
+                                                                            } else if ($roundt2 >= 91.00 && $roundt2 <= 100.00) {
+                                                                                $me = 100;
+                                                                            }
+
+
+                                                                            echo '
+                                                                    <div style="font-size:11px;" data-label="' . $roundt2 . '%" class="radial-bar radial-bar-' . $me . ' radial-bar-md radial-bar-success"><br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u><a href="myvote.php?gr=' . $gr . '&sec=' . $sec . '&str=' . $str . '" style="margin-top:500px;""><span style="font-size:10px;">' . $myrow['strand'] . " " . $myrow['section'] . '</span></a></u>  </div> 
+                                                               
+                                                                    ';
+                                                                        }
+                                                                        echo '
+                                                                </div>';
+                                                                    }
+                                                                    ?>
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <?php
+                                                }
+                                            } else { ?>
                                                 <div class="page-header">
                                                     <div class="row align-items-end">
                                                         <div class="col-lg-12">

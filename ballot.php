@@ -65,10 +65,16 @@ $row = $rs->fetch_assoc();
                                     include 'admin/includes/slugify.php';
 
                                     $candidate = '';
-                                    $sql = "SELECT * FROM position where acad_id='$acad' ORDER BY priority ASC";
+                                    $sql = "SELECT * FROM position WHERE acad_id='$acad' AND (election_type='general' OR election_type IS NULL) ORDER BY priority ASC";
                                     $query = $conn->query($sql);
                                     while ($row = $query->fetch_assoc()) {
-                                        $sql = "SELECT *,candidate.img as im FROM candidate INNER JOIN voters ON candidate.stud_id=voters.stud_id LEFT JOIN partylist ON candidate.p_id=partylist.p_id WHERE candidate.acad_id='$acad' and candidate.pos_id='" . $row['pos_id'] . "'";
+                                        $sql = "SELECT *,candidate.img as im
+                                                FROM candidate
+                                                INNER JOIN voters ON candidate.stud_id=voters.stud_id
+                                                LEFT JOIN partylist ON candidate.p_id=partylist.p_id
+                                                WHERE candidate.acad_id='$acad'
+                                                  AND candidate.pos_id='" . $row['pos_id'] . "'
+                                                  AND (candidate.election_type='general' OR candidate.election_type IS NULL)";
                                         $cquery = $conn->query($sql);
                                         while ($crow = $cquery->fetch_assoc()) {
                                             $slug = slugify($row['description']);
