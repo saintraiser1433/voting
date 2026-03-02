@@ -1,3 +1,6 @@
+<?php
+$admin_mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general';
+?>
 <nav class="navbar header-navbar pcoded-header">
     <div class="navbar-wrapper">
 
@@ -5,7 +8,7 @@
             <a class="mobile-menu" id="mobile-collapse" href="#!">
                 <i class="feather icon-menu"></i>
             </a>
-            <a href="index-1.htm">
+            <a href="dashboard.php">
                 <div class="d-flex justify-content-center align-items-center">
                     <img class="img-fluid" src="../libraries/img/glanlogo.png" alt="Theme-Logo" width="32px" height="32px">
                  <span class="ml-2">GIT MOBILE BASED VOTING SYSTEM</span>
@@ -19,6 +22,12 @@
 
         <div class="navbar-container container-fluid">
             <ul class="nav-left">
+                <li class="admin-mode-toggle mr-2">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="switch_admin_mode.php?mode=general" class="btn btn-sm <?php echo $admin_mode === 'general' ? 'btn-primary' : 'btn-outline-secondary'; ?>">General Voting</a>
+                        <a href="switch_admin_mode.php?mode=department" class="btn btn-sm <?php echo $admin_mode === 'department' ? 'btn-primary' : 'btn-outline-secondary'; ?>">Department Voting</a>
+                    </div>
+                </li>
                 <li class="header-search">
                     <div class="main-search morphsearch-search">
                         <div class="input-group">

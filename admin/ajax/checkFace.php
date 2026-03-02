@@ -7,22 +7,18 @@ header('Content-Type: application/json');
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-// Function to verify face ID (you should implement your actual verification logic here)
+// Function to verify face ID against voters or dept_voters based on session
 function verifyFaceId($id, $conn)
 {
-
-
-    // Prevent SQL injection
-    $id = mysqli_real_escape_string($conn, $id);
-
-    // Example query - modify according to your table structure
-    $query = "SELECT * FROM voters WHERE v_id = '$id'";
+    $id = (int) $id;
+    $mode = isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department' ? 'department' : 'general';
+    if ($mode === 'department') {
+        $query = "SELECT 1 FROM dept_voters WHERE dv_id = '$id'";
+    } else {
+        $query = "SELECT 1 FROM voters WHERE v_id = '$id'";
+    }
     $result = mysqli_query($conn, $query);
-
-    $isValid = mysqli_num_rows($result) > 0;
-
-    mysqli_close($conn);
-    return $isValid;
+    return $result && mysqli_num_rows($result) > 0;
 }
 
 try {

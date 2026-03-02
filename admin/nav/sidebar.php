@@ -1,3 +1,4 @@
+<?php $admin_mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general'; ?>
 <nav class="pcoded-navbar">
     <div class="pcoded-inner-navbar main-menu">
         <div class="pcoded-navigatio-lavel">Reports</div>
@@ -9,7 +10,38 @@
                 </a>
             </li>
             <div class="pcoded-navigatio-lavel">Manage</div>
-
+            <?php if ($admin_mode === 'department') { ?>
+            <li class="">
+                <a href="dept_voters.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/handshake.png"></span>
+                    <span class="pcoded-mtext">Dept Voters</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="departments.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/education.png"></span>
+                    <span class="pcoded-mtext">Departments</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="dept_candidates.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/motivate.png"></span>
+                    <span class="pcoded-mtext">Dept Candidates</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="dept_positions.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/top-three.png"></span>
+                    <span class="pcoded-mtext">Dept Positions</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="dept_ballot.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/vote.png"></span>
+                    <span class="pcoded-mtext">Ballot Positioning</span>
+                </a>
+            </li>
+            <?php } else { ?>
             <li class="">
                 <a href="voters.php">
                     <span class="pcoded-micon"><img src="../libraries/img/handshake.png"></span>
@@ -34,6 +66,7 @@
                     <span class="pcoded-mtext">Position</span>
                 </a>
             </li>
+            <?php } ?>
             <li class="">
                 <a href="sessionyear.php">
                     <span class="pcoded-micon"><img src="../libraries/img/calendar.png"></span>
@@ -54,12 +87,14 @@
                 </a>
             </li>
             <div class="pcoded-navigatio-lavel">Settings</div>
+            <?php if ($admin_mode !== 'department') { ?>
             <li class="">
                 <a href="ballot.php">
                     <span class="pcoded-micon"><img src="../libraries/img/vote.png"></span>
                     <span class="pcoded-mtext">Ballot Positioning</span>
                 </a>
             </li>
+            <?php } ?>
             <li class="">
                 <a href="#mytitleq" data-toggle="modal">
                     <span class="pcoded-micon"><img src="../libraries/img/title.png"></span>

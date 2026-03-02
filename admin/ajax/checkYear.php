@@ -2,15 +2,15 @@
 include '../../connection.php';
 
 $date = date('Y-m-d');
-$acad = $_SESSION['acad'];
-$sqls = "SELECT * FROM election_title where acad_id='$acad' and is_finished = 0";
+$acad = (int) $_SESSION['acad'];
+$sqls = "SELECT id, date_end FROM election_title WHERE acad_id = '$acad' AND is_finished = 0";
 $rs = $conn->query($sqls);
-if ($rs->num_rows > 0) {
-    $row = $rs->fetch_assoc();
-    $dateend = $row['date_end'];
-    if ($dateend < $date) {
-        $sql = "UPDATE election_title set is_finished = 1 where acad_id='$acad'";
-        $conn->query($sql);
+if ($rs && $rs->num_rows > 0) {
+    while ($row = $rs->fetch_assoc()) {
+        $dateend = isset($row['date_end']) ? $row['date_end'] : null;
+        if ($dateend && $dateend < $date) {
+            $eid = (int) $row['id'];
+            $conn->query("UPDATE election_title SET is_finished = 1 WHERE id = '$eid'");
+        }
     }
-
 }

@@ -4,7 +4,12 @@ include 'connection.php';
 $acad = $_SESSION['acad'];
 $voter = $_SESSION['v_id'];
 if (!isset($_SESSION['v_id']) && !isset($_SESSION['faceverified'])) {
-    header("Location:logout.php");
+    header("Location: logout.php");
+    exit;
+}
+if (isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department') {
+    header("Location: department_home.php");
+    exit;
 }
 
 $sel = "SELECT * FROM acad_tbl where acad_id = $acad";
@@ -72,7 +77,7 @@ $acads = $row['description'];
 
                             <div class="page-body">
                                 <?php
-                                $sqlt = "SELECT * FROM election_title where acad_id = '$acad' and is_finished = 0";
+                                $sqlt = "SELECT * FROM election_title WHERE acad_id = '$acad' AND is_finished = 0 AND (election_type = 'general' OR election_type IS NULL)";
                                 $rs = $conn->query($sqlt);
                                 if ($rs->num_rows > 0) {
                                     ?>
@@ -100,11 +105,11 @@ $acads = $row['description'];
                                                         <div class="col-lg-7 justify-content-lg-center">
                                                             <h2>TITLE:
                                                                 <?php
-                                                                $sql = "SELECT * FROM election_title where acad_id='$acad'";
+                                                                $sql = "SELECT * FROM election_title WHERE acad_id='$acad' AND (election_type = 'general' OR election_type IS NULL) LIMIT 1";
                                                                 $rs = $conn->query($sql);
-                                                                $row = $rs->fetch_assoc();
-                                                                if ($rs->num_rows > 0) {
-                                                                    echo $row['title'];
+                                                                $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
+                                                                if ($row && isset($row['title'])) {
+                                                                    echo htmlspecialchars($row['title']);
                                                                 } else {
                                                                     echo "Not set";
                                                                 }

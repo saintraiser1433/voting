@@ -224,14 +224,14 @@ if (isset($_GET['re'])) {
                                                                     $sql = "SELECT * FROM voters where acad_id='$acad' and is_verified = 0 order by date_issued DESC ";
                                                                     $res = $conn->query($sql);
                                                                     $i = 1;
-                                                                    while ($row = $res->fetch_assoc()) {
+                                                                    while ($res && ($row = $res->fetch_assoc())) {
                                                                         ?>
                                                                         <tr>
                                                                             <th scope="row"><?php echo $i++ ?></th>
 
                                                                             <td><?php echo $row['stud_id']; ?></td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0] ?>
+                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '') ?>
                                                                             </td>
                                                                             <td><?php echo $row['grade_level']; ?></td>
                                                                             <td><?php
@@ -316,14 +316,14 @@ if (isset($_GET['re'])) {
                                                                     $sql = "SELECT * FROM voters where acad_id='$acad'  and is_verified = 1 order by date_issued DESC";
                                                                     $res = $conn->query($sql);
                                                                     $i = 1;
-                                                                    while ($row = $res->fetch_assoc()) {
+                                                                    while ($res && ($row = $res->fetch_assoc())) {
                                                                         ?>
                                                                         <tr>
                                                                             <th scope="row"><?php echo $i++ ?></th>
 
                                                                             <td><?php echo $row['stud_id']; ?></td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0] ?>
+                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '') ?>
                                                                             </td>
                                                                             <td><?php echo $row['grade_level']; ?></td>
                                                                             <td><?php
@@ -427,6 +427,7 @@ if (isset($_GET['re'])) {
 
     <script>
         $(document).ready(function () {
+            $('.theme-loader').fadeOut(400, function () { $(this).remove(); });
             if (window.history.replaceState) {
                 window.history.replaceState(null, null, window.location.href);
             }

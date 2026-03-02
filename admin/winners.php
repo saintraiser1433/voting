@@ -8,8 +8,8 @@ if (!isset($_SESSION['at'])) {
 $acad = $_SESSION['acad'];
 $sel = "SELECT * FROM acad_tbl where acad_id = $acad";
 $rs = $conn->query($sel);
-$row = $rs->fetch_assoc();
-$acads = $row['description'];
+$row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
+$acads = $row ? $row['description'] : '';
 
 ?>
 <!DOCTYPE html>
@@ -57,6 +57,7 @@ $acads = $row['description'];
         </div>
     </div>
     <!-- Pre-loader end -->
+    <script>$(function(){ $('.theme-loader').fadeOut(400, function(){ $(this).remove(); }); });</script>
     <div id="pcoded" class="pcoded">
         <div class="pcoded-overlay-box"></div>
         <div class="pcoded-container navbar-wrapper">
@@ -88,12 +89,12 @@ $acads = $row['description'];
                                                     <?php
                                                     $sqlx = "SELECT * from acad_tbl";
                                                     $rsx = $conn->query($sqlx);
-                                                    foreach ($rsx as $row) {
+                                                    if ($rsx) { foreach ($rsx as $row) {
                                                         ?>
                                                         <option value="<?php echo $row['acad_id'] ?>" selected>
                                                             <?php echo $row['description'] ?>
                                                         </option>
-                                                    <?php } ?>
+                                                    <?php } } ?>
                                                 </select>
                                             </div>
 

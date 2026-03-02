@@ -65,7 +65,7 @@ $sqlt = "SELECT
                                                 vt.totalvote
                                             DESC";
 $rs = $conn->query($sqlt);
-if ($rs->num_rows > 0) { ?>
+if ($rs && $rs->num_rows > 0) { ?>
     <button type="button" class="btn btn-primary" id="print" onclick="getprint()">PRINT</button>
     <div class="row users-card mt-2">
 

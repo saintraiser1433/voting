@@ -5,10 +5,11 @@ if (!isset($_SESSION['at'])) {
     header("Location:logout.php");
 }
 
+$admin_mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'general';
 $sel = "SELECT * FROM acad_tbl where acad_id = $acad";
 $rs = $conn->query($sel);
-$row = $rs->fetch_assoc();
-$acads = $row['description'];
+$row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
+$acads = $row ? $row['description'] : '';
 
 
 ?>
@@ -78,9 +79,9 @@ $acads = $row['description'];
                                             <!-- statustic-card start -->
                                             <?php
 
-                                            $sql = "SELECT * FROM election_title where acad_id = '$acad' and is_finished = 0";
+                                            $sql = "SELECT * FROM election_title WHERE acad_id = '$acad' AND (election_type = '" . $conn->real_escape_string($admin_mode) . "' OR election_type IS NULL) AND is_finished = 0";
                                             $rss = $conn->query($sql);
-                                            if ($rss->num_rows > 0) { ?>
+                                            if ($rss && $rss->num_rows > 0) { ?>
                                                 <div id="ps"></div>
                                                 <div class="col-xl-12 col-md-12">
                                                     <div class="card">
@@ -103,7 +104,7 @@ $acads = $row['description'];
                                                                 <?php
                                                                 $stq = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
                                                                 $rpq = $conn->query($stq);
-                                                                while ($rqq = $rpq->fetch_assoc()) {
+                                                                while ($rpq && ($rqq = $rpq->fetch_assoc())) {
                                                                     ?>
                                                                     <li class="nav-item">
                                                                         <a class="nav-link" data-toggle="tab"
@@ -119,13 +120,13 @@ $acads = $row['description'];
                                                                 <?php
                                                                 $stq1 = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
                                                                 $rpq1 = $conn->query($stq1);
-                                                                while ($rqq1 = $rpq1->fetch_assoc()) {
+                                                                while ($rpq1 && ($rqq1 = $rpq1->fetch_assoc())) {
                                                                     $gr = $rqq1['grade_level'];
 
                                                                     echo ' <div class="tab-pane" id="' . $rqq1['grade_level'] . '" role="tabpanel">';
                                                                     $stq = "SELECT * FROM voters where  acad_id='$acad' and grade_level='$gr' group by section,strand";
                                                                     $ss = $conn->query($stq);
-                                                                    while ($myrow = $ss->fetch_assoc()) {
+                                                                    while ($ss && ($myrow = $ss->fetch_assoc())) {
                                                                         $sec = $myrow['section'];
                                                                         $str = $myrow['strand'];
                                                                         $sqlt = "SELECT * FROM voters where acad_id='$acad' and grade_level='$gr' and section='$sec' and strand='$str'";
@@ -133,9 +134,9 @@ $acads = $row['description'];
                                                                         $sqlovr = "SELECT * FROM voters INNER JOIN vote ON voters.v_id=vote.voter_id where voters.grade_level='$gr' and voters.acad_id='$acad' and voters.section='$sec' and voters.strand='$str' group by voters.section,voters.strand";
                                                                         $rsqltq = $conn->query($sqlovr);
                                                                         $finalt1 = 0;
-                                                                        $from11 = $rsqltq->num_rows;
-                                                                        $to11 = $rsqlt->num_rows;
-                                                                        $finalt1 = $from11 / $to11 * 100;
+                                                                        $from11 = ($rsqltq && $rsqltq->num_rows > 0) ? $rsqltq->num_rows : 0;
+                                                                        $to11 = ($rsqlt && $rsqlt->num_rows > 0) ? $rsqlt->num_rows : 1;
+                                                                        $finalt1 = $to11 > 0 ? ($from11 / $to11 * 100) : 0;
 
                                                                         $roundt2 = round($finalt1, 2);
                                                                         if ($roundt2 == 0) {
@@ -175,13 +176,13 @@ $acads = $row['description'];
                                                                 <?php
                                                                 $stq1 = "SELECT * FROM voters where acad_id='$acad' group by grade_level order by grade_level asc";
                                                                 $rpq1 = $conn->query($stq1);
-                                                                if ($rqq1 = $rpq1->fetch_assoc()) {
+                                                                if ($rpq1 && ($rqq1 = $rpq1->fetch_assoc())) {
                                                                     $gr = $rqq1['grade_level'];
 
                                                                     echo ' <div class="tab-pane active" id="' . $rqq1['grade_level'] . '" role="tabpanel">';
                                                                     $stq = "SELECT * FROM voters where  acad_id='$acad' and  grade_level='$gr' group by section,strand";
                                                                     $ss = $conn->query($stq);
-                                                                    while ($myrow = $ss->fetch_assoc()) {
+                                                                    while ($ss && ($myrow = $ss->fetch_assoc())) {
                                                                         $sec = $myrow['section'];
                                                                         $str = $myrow['strand'];
                                                                         $sqlt = "SELECT * FROM voters where acad_id='$acad' and  grade_level='$gr' and section='$sec' and strand='$str'";
@@ -189,9 +190,9 @@ $acads = $row['description'];
                                                                         $sqlovr = "SELECT * FROM voters INNER JOIN vote ON voters.v_id=vote.voter_id where voters.grade_level='$gr' and voters.acad_id='$acad' and voters.section='$sec' and voters.strand='$str' group by voters.section";
                                                                         $rsqltq = $conn->query($sqlovr);
                                                                         $finalt1 = 0;
-                                                                        $from11 = $rsqltq->num_rows;
-                                                                        $to11 = $rsqlt->num_rows;
-                                                                        $finalt1 = $from11 / $to11 * 100;
+                                                                        $from11 = ($rsqltq && $rsqltq->num_rows > 0) ? $rsqltq->num_rows : 0;
+                                                                        $to11 = ($rsqlt && $rsqlt->num_rows > 0) ? $rsqlt->num_rows : 1;
+                                                                        $finalt1 = $to11 > 0 ? ($from11 / $to11 * 100) : 0;
                                                                         $roundt2 = round($finalt1);
                                                                         if ($roundt2 == 0) {
                                                                             $me = 0;
@@ -311,7 +312,7 @@ $acads = $row['description'];
                                                 vt.totalvote
                                             DESC";
                                                     $rs = $conn->query($sqlt);
-                                                    if ($rs->num_rows > 0) { ?>
+                                                    if ($rs && $rs->num_rows > 0) { ?>
 
                                                         <?php foreach ($rs as $row) { ?>
                                                             <div class="col-lg-6 col-xl-3 col-md-6">

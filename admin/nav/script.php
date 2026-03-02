@@ -35,7 +35,7 @@ include 'mymodal.php';
 
 <script>
     $(document).ready(function () {
-
+        $('.theme-loader').fadeOut(400, function () { $(this).remove(); });
         $('#password11').keyup(function () {
             var npass = $('#password11').val();
             var cpass = $('#cpassword11').val();

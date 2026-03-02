@@ -8,9 +8,14 @@ if ($_SESSION['mypass'] != 's') {
 
 
 if (isset($_POST['submitsq'])) {
-    $id = $_POST['idhidden'];
+    $id = (int) $_POST['idhidden'];
     $password = md5($_POST['password']);
-    $sqls = "UPDATE voters SET password='$password' where v_id='$id'";
+    $mode = isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department' ? 'department' : 'general';
+    if ($mode === 'department') {
+        $sqls = "UPDATE dept_voters SET password='$password' WHERE dv_id='$id'";
+    } else {
+        $sqls = "UPDATE voters SET password='$password' WHERE v_id='$id'";
+    }
     if ($conn->query($sqls)) {
         header("Location:face-scan.php");
     }

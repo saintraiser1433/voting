@@ -13,7 +13,7 @@ if (isset($_POST['submit'])) {
     $check_sql = "SELECT * FROM courses WHERE course_code='$course_code' AND acad_id='$acad'";
     $check_result = $conn->query($check_sql);
     
-    if ($check_result->num_rows > 0) {
+    if ($check_result && $check_result->num_rows > 0) {
         $_SESSION['response'] = "Course code already exists";
         $_SESSION['type'] = "warning";
     } else {
@@ -37,7 +37,7 @@ if (isset($_POST['update'])) {
     $check_sql = "SELECT * FROM courses WHERE course_code='$course_code' AND acad_id='$acad' AND course_id != '$course_id'";
     $check_result = $conn->query($check_sql);
     
-    if ($check_result->num_rows > 0) {
+    if ($check_result && $check_result->num_rows > 0) {
         $_SESSION['response'] = "Course code already exists";
         $_SESSION['type'] = "warning";
     } else {
@@ -109,6 +109,7 @@ if (isset($_POST['delete'])) {
         </div>
     </div>
     <!-- Pre-loader end -->
+    <script>$(function(){ $('.theme-loader').fadeOut(400, function(){ $(this).remove(); }); });</script>
     <div id="pcoded" class="pcoded">
         <div class="pcoded-overlay-box"></div>
         <div class="pcoded-container navbar-wrapper">
@@ -199,14 +200,12 @@ if (isset($_POST['delete'])) {
                                                                     $rs = $conn->query($sql);
                                                                     $i = 1;
                                                                     
-                                                                    // Debug: Show query and result count
                                                                     if (!$rs) {
-                                                                        echo "<tr><td colspan='6' class='text-danger'>Error: " . $conn->error . "</td></tr>";
+                                                                        echo "<tr><td colspan='6' class='text-danger'>Error: " . htmlspecialchars($conn->error) . "</td></tr>";
                                                                     } else if ($rs->num_rows == 0) {
-                                                                        echo "<tr><td colspan='6' class='text-warning'>No courses found for academic year: $acad</td></tr>";
+                                                                        echo "<tr><td colspan='6' class='text-warning'>No courses found.</td></tr>";
                                                                     }
-                                                                    
-                                                                    while ($row = $rs->fetch_assoc()) {
+                                                                    while ($rs && ($row = $rs->fetch_assoc())) {
                                                                         ?>
                                                                         <tr>
                                                                             <th scope="row"><?php echo $i++; ?></th>

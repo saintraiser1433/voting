@@ -3,26 +3,26 @@
 if (!isset($_SESSION['face'])) {
     header("Location:index.php");
 }
-$id = $_SESSION['v_id'];
+$id = (int) $_SESSION['v_id'];
+$voting_mode = isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department' ? 'department' : 'general';
 
-
-$sql = "SELECT v_id,lname,fname,mname FROM voters where is_verified = 1 and v_id ='$id'";
-$result = mysqli_query($conn, $sql);
 $srcs = array();
 $faceIdMap = array();
 
-if (mysqli_num_rows($result) > 0) {
+if ($voting_mode === 'department') {
+    $sql = "SELECT dv_id, lname, fname, mname FROM dept_voters WHERE is_verified = 1 AND dv_id = '$id'";
+} else {
+    $sql = "SELECT v_id, lname, fname, mname FROM voters WHERE is_verified = 1 AND v_id = '$id'";
+}
+$result = mysqli_query($conn, $sql);
+if ($result && mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
-
-        $name = $row['lname'] . "," . $row['fname'] . " " . $row['mname'][0];
-
-
+        $name = $row['lname'] . "," . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '');
         $srcs[] = $name;
-
-
-        $faceIdMap[$name] = $row['v_id'];
+        $faceIdMap[$name] = $voting_mode === 'department' ? $row['dv_id'] : $row['v_id'];
     }
 }
+$redirectAfterFace = ($voting_mode === 'department') ? 'department_home.php' : 'home.php';
 
 
 $faceIdMapJS = "const faceIdMap = new Map(" . json_encode(array_map(
@@ -424,7 +424,7 @@ $faceIdMapJS = "const faceIdMap = new Map(" . json_encode(array_map(
                 });
 
                 if (response.ok) {
-                    window.location.href = "home.php";
+                    window.location.href = "<?php echo $redirectAfterFace; ?>";
                 }
 
             } catch (error) {

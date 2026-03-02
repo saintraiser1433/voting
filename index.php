@@ -1,34 +1,57 @@
 <?php
 include 'connection.php';
 $acad = $_SESSION['acad'];
+$voting_mode = isset($_POST['voting_mode']) && $_POST['voting_mode'] === 'department' ? 'department' : 'general';
+
 if (isset($_POST['submits'])) {
-    $username = $_POST['username'];
+    $username = $conn->real_escape_string($_POST['username']);
     $password = $_POST['password'];
-    $md5 = md5($_POST['password']);
-    if ($_POST['myps1'] == '') {
-        $sql = "SELECT * FROM voters where stud_id='$username' and CONCAT(lname,stud_id)='$password' and acad_id='$acad' and is_verified=1";
+    $md5 = md5($password);
+
+    if ($voting_mode === 'department') {
+        if (!isset($_POST['myps1']) || $_POST['myps1'] === '') {
+            $sql = "SELECT * FROM dept_voters WHERE stud_id='$username' AND CONCAT(lname,stud_id)='$password' AND acad_id='$acad' AND is_verified=1";
+        } else {
+            $sql = "SELECT * FROM dept_voters WHERE stud_id='$username' AND password='$md5' AND acad_id='$acad' AND is_verified=1";
+        }
         $rs = $conn->query($sql);
-        $row = $rs->fetch_assoc();
-        if ($rs->num_rows > 0) {
-            $_SESSION['mypass'] = "s";
-            $_SESSION['v_id'] = $row['v_id'];
-            $_SESSION['face'] = $row['v_id'];
-            $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0];
-            header("Location:indexss.php");
+        $row = $rs && $rs->num_rows > 0 ? $rs->fetch_assoc() : null;
+        if ($row) {
+            $_SESSION['voting_mode'] = 'department';
+            $_SESSION['mypass'] = (isset($_POST['myps1']) && $_POST['myps1'] !== '') ? $row['password'] : 's';
+            $_SESSION['v_id'] = $row['dv_id'];
+            $_SESSION['face'] = $row['dv_id'];
+            $_SESSION['dept_id'] = $row['department_id'];
+            $m = isset($row['mname'][0]) ? $row['mname'][0] . '.' : '';
+            $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . $m;
+            if ($_SESSION['mypass'] === 's') {
+                header("Location:indexss.php");
+            } else {
+                header("Location:face-scan.php");
+            }
         } else {
             $_SESSION['response'] = "Incorrect Credentials";
             $_SESSION['type'] = "danger";
         }
     } else {
-        $sql = "SELECT * FROM voters where stud_id='$username' and password='$md5' and acad_id='$acad' and is_verified=1";
+        if (!isset($_POST['myps1']) || $_POST['myps1'] === '') {
+            $sql = "SELECT * FROM voters WHERE stud_id='$username' AND CONCAT(lname,stud_id)='$password' AND acad_id='$acad' AND is_verified=1";
+        } else {
+            $sql = "SELECT * FROM voters WHERE stud_id='$username' AND password='$md5' AND acad_id='$acad' AND is_verified=1";
+        }
         $rs = $conn->query($sql);
-        $row = $rs->fetch_assoc();
-        if ($rs->num_rows > 0) {
-            $_SESSION['mypass'] = $row['password'];
+        $row = $rs && $rs->num_rows > 0 ? $rs->fetch_assoc() : null;
+        if ($row) {
+            $_SESSION['voting_mode'] = 'general';
+            $_SESSION['mypass'] = (isset($_POST['myps1']) && $_POST['myps1'] !== '') ? $row['password'] : 's';
             $_SESSION['v_id'] = $row['v_id'];
             $_SESSION['face'] = $row['v_id'];
-            $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0];
-            header("Location:face-scan.php");
+            $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '');
+            if ($_SESSION['mypass'] === 's') {
+                header("Location:indexss.php");
+            } else {
+                header("Location:face-scan.php");
+            }
         } else {
             $_SESSION['response'] = "Incorrect Credentials";
             $_SESSION['type'] = "danger";
@@ -59,8 +82,9 @@ if (isset($_POST['submits'])) {
             <img src="libraries/lassets/img/bg.svg">
         </div>
         <div class="login-content">
-            <form action="" method="post">
+            <form action="" method="post" id="loginForm">
                 <input type="hidden" name="myps1" id="myps">
+                <input type="hidden" name="voting_mode" id="voting_mode" value="general">
                 <img src="libraries/lassets/img/avatar.svg">
                 <?php if (isset($_SESSION['response'])) { ?>
                     <div class="alert alert-<?= $_SESSION['type']; ?> alert-dismissible">
@@ -69,6 +93,10 @@ if (isset($_POST['submits'])) {
                     </div>
                     <?php unset($_SESSION['response']);
                 } ?>
+                <div class="mb-3 d-flex justify-content-around" style="gap: 8px;">
+                    <button type="button" class="btn btn-outline-primary flex-fill active" id="tabGeneral" data-mode="general">General Voting</button>
+                    <button type="button" class="btn btn-outline-secondary flex-fill" id="tabDepartment" data-mode="department">Department Voting</button>
+                </div>
                 <h2 class="title">Welcome</h2>
                 <div class="input-div one">
                     <div class="i">
@@ -106,18 +134,26 @@ if (isset($_POST['submits'])) {
 </html>
 <script>
     $(document).ready(function () {
+        $('#tabGeneral').on('click', function () {
+            $('#voting_mode').val('general');
+            $('#tabGeneral').addClass('active btn-primary').removeClass('btn-outline-primary');
+            $('#tabDepartment').removeClass('active btn-primary').addClass('btn-outline-secondary');
+        });
+        $('#tabDepartment').on('click', function () {
+            $('#voting_mode').val('department');
+            $('#tabDepartment').addClass('active btn-primary').removeClass('btn-outline-secondary');
+            $('#tabGeneral').removeClass('active btn-primary').addClass('btn-outline-primary');
+        });
         $('#username').keyup(function () {
             var news = $(this).val();
+            var mode = $('#voting_mode').val();
             $.ajax({
                 method: "POST",
                 url: "ajax/usernamepass.php",
-                data: {
-                    myids: news,
-                },
+                data: { myids: news, mode: mode },
                 success: function (html) {
                     $('#myps').val(html);
                 }
-
             });
         });
     });

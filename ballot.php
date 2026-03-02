@@ -3,15 +3,20 @@ include 'connection.php';
 
 $acad = $_SESSION['acad'];
 if (!isset($_SESSION['v_id']) && !isset($_SESSION['faceverified'])) {
-    header("Location:logout.php");
+    header("Location: logout.php");
+    exit;
+}
+if (isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department') {
+    header("Location: department_home.php");
+    exit;
 }
 if (isset($_POST['buts'])) {
     $_SESSION['response'] = "You must vote atleast one candidate";
     $_SESSION['type'] = "warning";
 }
-$sql = "SELECT * FROM election_title where acad_id='$acad'";
+$sql = "SELECT * FROM election_title WHERE acad_id='$acad' AND (election_type = 'general' OR election_type IS NULL) LIMIT 1";
 $rs = $conn->query($sql);
-$row = $rs->fetch_assoc();
+$row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
 
 
 ?>
@@ -48,7 +53,7 @@ $row = $rs->fetch_assoc();
                                                         <h5 class="m-b-5 text-uppercase text-center"><b><img
                                                                     src="libraries/img/glanlogo.png"
                                                                     style="width:60px; height:60px;">
-                                                                <?php echo $row['title'] ?></b></h5>
+                                                                <?php echo ($row && isset($row['title'])) ? htmlspecialchars($row['title']) : 'Election'; ?></b></h5>
                                                         <span>Note: Always make sure to click "Preview" Button before
                                                             submitting your votes! Thank you and godbless!</span>
                                                     </div>
