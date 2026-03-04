@@ -480,9 +480,10 @@ if (isset($_GET['re'])) {
 
             $(document).on('click', '.edit', function () {
                 $('#default-Modal').modal('show');
-                $tr = $(this).closest('tr');
+                var $tr = $(this).closest('tr');
                 var data = $tr.children("td").map(function () {
-                    return $(this).text();
+                    // Trim whitespace from each cell text so inputs don't get big spaces
+                    return $.trim($(this).text());
                 }).get();
                 console.log(data);
                 var p = data[2];
@@ -495,17 +496,17 @@ if (isset($_GET['re'])) {
                     dataType: "text",
                     success: function (html) {
                         $('#content').html(html);
-                        $('#section').val(data[5]);
-                        $('#strand').val(data[4]);
+                        $('#section').val($.trim(data[5]));
+                        $('#strand').val($.trim(data[4]));
                     }
                 });
-                $('#id').val(data[0]);
-                $('#fname').val(data[6]);
-                $('#mname').val(data[8]);
-                $('#lname').val(data[7]);
-                $('#yearlevel').val(data[2]);
-                $('#studid').val(data[0]);
-                $('#idhidden').val(data[9]);
+                $('#id').val($.trim(data[0]));
+                $('#fname').val($.trim(data[6]));
+                $('#mname').val($.trim(data[8]));
+                $('#lname').val($.trim(data[7]));
+                $('#yearlevel').val($.trim(data[2]));
+                $('#studid').val($.trim(data[0]));
+                $('#idhidden').val($.trim(data[9]));
                 $('#studid').attr('readonly', 'readonly');
                 $('.modal-titles').html('Update Basic Information');
                 $('#submits').remove();

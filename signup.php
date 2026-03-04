@@ -293,20 +293,24 @@
                             url: "admin/ajax/submitData.php",
                             processData: false,
                             contentType: false,
+                            dataType: "json",
                             data: formData,
-                            success: function (html) {
-                                const result = JSON.parse(html);
-
-                                if (result.success) {
+                            success: function (response) {
+                                // jQuery already parsed JSON because of dataType:'json'
+                                var result = response;
+                                if (result && result.success) {
                                     swal("Success!", "We will validate your submition details to verify if its you thank you. Please wait for an hour thankss!", "success")
-                                        .then((value) => {
+                                        .then(function () {
                                             window.location.href = "index.php";
                                         });
                                 } else {
-                                    swal("Error!", result.message || "Something went wrong!", "error");
+                                    var msg = (result && result.message) ? result.message : "Something went wrong!";
+                                    swal("Error!", msg, "error");
                                 }
+                            },
+                            error: function (xhr, status, error) {
+                                swal("Error!", "Request failed: " + error, "error");
                             }
-
                         });
 
                     } else {

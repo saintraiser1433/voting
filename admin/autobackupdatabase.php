@@ -1,6 +1,6 @@
 <?php
 
-$database = ['myvote'];
+$database = ['votes'];
 $user = "root";
 $pass = "";
 $host = "localhost";

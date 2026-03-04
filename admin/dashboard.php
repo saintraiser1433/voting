@@ -18,6 +18,7 @@ $acads = $row ? $row['description'] : '';
 <html lang="en">
 
 <?php include 'nav/header.php'; ?>
+<link rel="stylesheet" href="assets/css/dashboard-responsive.css">
 <!-- Menu sidebar static layout -->
 
 <body>
@@ -71,17 +72,36 @@ $acads = $row ? $row['description'] : '';
                     <div class="pcoded-content">
                         <div class="pcoded-inner-content">
                             <div class="main-body">
-                                <div class="page-wrapper">
+                                <div class="page-wrapper dashboard-page">
 
                                     <div class="page-body">
                                         <div class="row">
 
                                             <!-- statustic-card start -->
                                             <?php
-
-                                            $sql = "SELECT * FROM election_title WHERE acad_id = '$acad' AND (election_type = '" . $conn->real_escape_string($admin_mode) . "' OR election_type IS NULL) AND is_finished = 0";
-                                            $rss = $conn->query($sql);
-                                            if ($rss && $rss->num_rows > 0) { ?>
+                                            // Separate dashboards: general vs department
+                                            if ($admin_mode === 'department') {
+                                                // Department voting dashboard (per-department results)
+                                                include 'department_dashboard_block.php';
+                                            } else {
+                                                // General voting dashboard (year-level analytics + officers/results)
+                                                // Get current election for this acad + mode (open or closed)
+                                                $sql = "SELECT * FROM election_title WHERE acad_id = '$acad' AND (election_type = '" . $conn->real_escape_string($admin_mode) . "' OR election_type IS NULL) ORDER BY id DESC LIMIT 1";
+                                                $rss = $conn->query($sql);
+                                                if (!$rss && strpos($conn->error, 'Unknown column') !== false) {
+                                                    $sql = "SELECT * FROM election_title WHERE acad_id = '$acad' ORDER BY id DESC LIMIT 1";
+                                                    $rss = $conn->query($sql);
+                                                }
+                                                $election_row = ($rss && $rss->num_rows > 0) ? $rss->fetch_assoc() : null;
+                                                // Election is "open" when is_finished is 0, '0', or missing (default to open)
+                                                $fin = isset($election_row['is_finished']) ? $election_row['is_finished'] : 0;
+                                                $election_open = $election_row && ((int)$fin === 0);
+                                                if ($election_row && $election_open) {
+                                                $date_start = isset($election_row['date_start']) ? $election_row['date_start'] : null;
+                                                $date_end = isset($election_row['date_end']) ? $election_row['date_end'] : null;
+                                                $label = 'General voting';
+                                                include 'includes/election_running_time.php';
+                                                ?>
                                                 <div id="ps"></div>
                                                 <div class="col-xl-12 col-md-12">
                                                     <div class="card">
@@ -236,15 +256,21 @@ $acads = $row ? $row['description'] : '';
                                                     </div>
                                                 </div>
                                             <?php } else { ?>
+                                                <div class="col-12 dashboard-officers-wrap">
                                                 <div class="page-header">
                                                     <div class="row align-items-end">
                                                         <div class="col-lg-12">
                                                             <div class="page-header-title">
                                                                 <div class="d-inline">
-                                                                    <h4>ELECTED OFFICERS FOR ACADEMIC YEAR :
+                                                                    <h4>OFFICERS / RESULTS FOR ACADEMIC YEAR :
                                                                         <?php echo $acads ?>
                                                                     </h4>
-                                                                    <span>This is the list of elected officers</span>
+                                                                    <span><?php echo $election_row ? 'Elected officers (election ended)' : 'No election configured for this year. Open Election Settings to set up.'; ?></span>
+                                                                    <?php if ($election_row && !$election_open) { ?>
+                                                                    <div class="mt-2">
+                                                                        <button type="button" class="btn btn-success btn-sm" id="reopenElectionBtn">Reopen election (voting ongoing)</button>
+                                                                    </div>
+                                                                    <?php } ?>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -254,7 +280,10 @@ $acads = $row ? $row['description'] : '';
                                                 </div>
                                                 <div class="row users-card">
                                                     <?php
-
+                                                    if (!$election_row) { ?>
+                                                        <div class="col-12"><p class="text-muted">Configure the election title and open voting from <strong>Election Settings</strong> to see live results here.</p></div>
+                                                    <?php } else {
+                                                    $type_esc = $conn->real_escape_string($admin_mode);
                                                     $sqlt = "SELECT
                                                 CONCAT(
                                                     UPPER(v.lname),
@@ -288,7 +317,9 @@ $acads = $row ? $row['description'] : '';
                                             ON
                                                 vt.candidate_id = c.c_id
                                             WHERE
-                                                c.acad_id = $acad AND(
+                                                c.acad_id = $acad
+                                            AND (et.election_type = '$type_esc' OR et.election_type IS NULL)
+                                            AND (
                                                 SELECT
                                                     COUNT(*)
                                                 FROM
@@ -312,6 +343,10 @@ $acads = $row ? $row['description'] : '';
                                                 vt.totalvote
                                             DESC";
                                                     $rs = $conn->query($sqlt);
+                                                    if (!$rs && strpos($conn->error, 'Unknown column') !== false) {
+                                                        $sqlt = "SELECT CONCAT(UPPER(v.lname), ', ', UPPER(v.fname)) AS fname, pos.description, vt.totalvote, pos.max_vote, c.img FROM candidate c INNER JOIN voters v ON c.stud_id = v.stud_id INNER JOIN partylist p ON c.p_id = p.p_id INNER JOIN POSITION pos ON c.pos_id = pos.pos_id INNER JOIN election_title et ON et.acad_id = c.acad_id LEFT JOIN (SELECT candidate_id, COUNT(DISTINCT voter_id) AS totalvote FROM vote GROUP BY candidate_id) vt ON vt.candidate_id = c.c_id WHERE c.acad_id = $acad AND et.is_finished = 1 AND (SELECT COUNT(*) FROM candidate c2 LEFT JOIN (SELECT candidate_id, COUNT(DISTINCT voter_id) AS totalvote FROM vote GROUP BY candidate_id) vt2 ON vt2.candidate_id = c2.c_id WHERE c2.pos_id = c.pos_id AND vt2.totalvote > vt.totalvote) < pos.max_vote ORDER BY pos.priority ASC, vt.totalvote DESC";
+                                                        $rs = $conn->query($sqlt);
+                                                    }
                                                     if ($rs && $rs->num_rows > 0) { ?>
 
                                                         <?php foreach ($rs as $row) { ?>
@@ -339,6 +374,11 @@ $acads = $row ? $row['description'] : '';
                                                         <?php }
                                                     }
                                             }
+                                                ?>
+                                                </div>
+                                                </div>
+                                            <?php }
+                                            } // end admin_mode branch
                                             ?>
 
 
@@ -386,15 +426,27 @@ $acads = $row ? $row['description'] : '';
         ?>
         <script>
             $(document).ready(function () {
-                setInterval(() => {
-                    $.ajax({
-                        url: "ajax/fetchtally.php",
-                        success: function (datas) {
-                            $('#ps').html(datas);
-                        }
-                    });
-
-                }, 1000);
+                $('.theme-loader').fadeOut(400, function(){ $(this).remove(); });
+                var deptId = typeof window.__deptDashboardDeptId !== 'undefined' ? window.__deptDashboardDeptId : 0;
+                if (deptId) {
+                    setInterval(function () {
+                        $.ajax({
+                            url: "ajax/fetchtally_dept.php?dept_id=" + deptId,
+                            success: function (datas) {
+                                $('#ps-dept').html(datas);
+                            }
+                        });
+                    }, 2000);
+                } else {
+                    setInterval(function () {
+                        $.ajax({
+                            url: "ajax/fetchtally.php",
+                            success: function (datas) {
+                                $('#ps').html(datas);
+                            }
+                        });
+                    }, 1000);
+                }
 
                 setInterval(() => {
                     $.ajax({
@@ -420,7 +472,29 @@ $acads = $row ? $row['description'] : '';
                     });
                 }
 
-                getData('<?php echo $acad ?>')
+                getData('<?php echo $acad ?>');
+
+                $('#reopenElectionBtn').on('click', function () {
+                    var btn = $(this);
+                    btn.prop('disabled', true).text('Reopening...');
+                    $.ajax({
+                        url: 'ajax/reopenElection.php',
+                        method: 'POST',
+                        dataType: 'json',
+                        success: function (r) {
+                            if (r.success) {
+                                swal({ title: r.message, icon: 'success' }).then(function () { location.reload(); });
+                            } else {
+                                swal({ title: r.message || 'Error', icon: 'error' });
+                                btn.prop('disabled', false).text('Reopen election (voting ongoing)');
+                            }
+                        },
+                        error: function () {
+                            swal({ title: 'Request failed', icon: 'error' });
+                            btn.prop('disabled', false).text('Reopen election (voting ongoing)');
+                        }
+                    });
+                });
             });
 
 

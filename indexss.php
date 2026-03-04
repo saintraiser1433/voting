@@ -10,12 +10,8 @@ if ($_SESSION['mypass'] != 's') {
 if (isset($_POST['submitsq'])) {
     $id = (int) $_POST['idhidden'];
     $password = md5($_POST['password']);
-    $mode = isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department' ? 'department' : 'general';
-    if ($mode === 'department') {
-        $sqls = "UPDATE dept_voters SET password='$password' WHERE dv_id='$id'";
-    } else {
-        $sqls = "UPDATE voters SET password='$password' WHERE v_id='$id'";
-    }
+    // Shared voters table now stores password for both general and department modes
+    $sqls = "UPDATE voters SET password='$password' WHERE v_id='$id'";
     if ($conn->query($sqls)) {
         header("Location:face-scan.php");
     }

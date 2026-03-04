@@ -14,8 +14,8 @@ if (isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department'
 
 $sel = "SELECT * FROM acad_tbl where acad_id = $acad";
 $rs = $conn->query($sel);
-$row = $rs->fetch_assoc();
-$acads = $row['description'];
+$row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
+$acads = $row ? $row['description'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -79,7 +79,18 @@ $acads = $row['description'];
                                 <?php
                                 $sqlt = "SELECT * FROM election_title WHERE acad_id = '$acad' AND is_finished = 0 AND (election_type = 'general' OR election_type IS NULL)";
                                 $rs = $conn->query($sqlt);
-                                if ($rs->num_rows > 0) {
+                                if (!$rs && strpos($conn->error ?? '', 'Unknown column') !== false) {
+                                    $rs = $conn->query("SELECT * FROM election_title WHERE acad_id = '$acad' AND (election_type = 'general' OR election_type IS NULL) LIMIT 1");
+                                    if (!$rs) {
+                                        $rs = $conn->query("SELECT * FROM election_title WHERE acad_id = '$acad' LIMIT 1");
+                                    }
+                                }
+                                if ($rs && $rs->num_rows > 0) {
+                                    $et_row = $rs->fetch_assoc();
+                                    $date_start = isset($et_row['date_start']) ? $et_row['date_start'] : null;
+                                    $date_end = isset($et_row['date_end']) ? $et_row['date_end'] : null;
+                                    $label = 'General voting';
+                                    include 'admin/includes/election_running_time.php';
                                     ?>
                                     <div class="row">
 
@@ -120,9 +131,9 @@ $acads = $row['description'];
                                                             <span class="text-muted">Session Year: <?php
                                                             $sql = "SELECT * FROM acad_tbl where acad_id='$acad'";
                                                             $rs = $conn->query($sql);
-                                                            $row = $rs->fetch_assoc();
-                                                            if ($rs->num_rows > 0) {
-                                                                echo $row['description'];
+                                                            $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
+                                                            if ($row) {
+                                                                echo htmlspecialchars($row['description']);
                                                             } else {
                                                                 echo "Not set";
                                                             }
@@ -131,12 +142,15 @@ $acads = $row['description'];
                                                             <?php
                                                             $sql = "SELECT * FROM vote where acad_id='$acad' and voter_id='$voter'";
                                                             $rs = $conn->query($sql);
-                                                            if ($rs->num_rows > 0) {
+                                                            if ($rs && $rs->num_rows > 0) {
                                                                 echo '  <span class="text-center font-weight-bold">You have already voted for this election.</span><br><br>';
-
+                                                                echo '  <a href="my_ballot.php?type=general" class="btn btn-outline-primary btn-sm mr-1"><i class="fa fa-file-text-o"></i> View My Ballot</a>';
+                                                                echo '  <a href="my_ballot.php?type=general" class="btn btn-outline-secondary btn-sm" target="_blank"><i class="fa fa-print"></i> Print Ballot</a>';
+                                                                echo ' <a href="switch_voting_mode.php?mode=department" class="btn btn-outline-primary btn-sm ml-2">Department Voting</a>';
                                                             } else {
                                                                 echo '  <span class="text-center font-weight-bold">Please click "Start Button" to begin vote!</span><br><br>
-                                                            <a href="ballot.php" class="btn btn-success"><i class="fa fa-arrow-right"></i> Start!</a>';
+                                                            <a href="ballot.php" class="btn btn-success"><i class="fa fa-arrow-right"></i> Start!</a> ';
+                                                                echo ' <a href="switch_voting_mode.php?mode=department" class="btn btn-outline-primary btn-sm ml-2">Department Voting</a>';
                                                             }
                                                             ?>
 
@@ -156,7 +170,7 @@ $acads = $row['description'];
                                         <?php
                                         $sql = "SELECT * FROM partylist where acad_id='$acad'";
                                         $rs = $conn->query($sql);
-                                        while ($row = $rs->fetch_assoc()) {
+                                        while ($rs && ($row = $rs->fetch_assoc())) {
                                             echo '
                                         <div class="col-xl-6 col-md-6">
                                         <div class="card">
@@ -207,7 +221,7 @@ $acads = $row['description'];
                                         <?php
                                         $sql = "SELECT * FROM candidate LEFT JOIN voters ON candidate.stud_id=voters.stud_id LEFT JOIN position ON candidate.pos_id=position.pos_id where candidate.acad_id='$acad' and candidate.p_id='0' order by position.priority ASC";
                                         $rs = $conn->query($sql);
-                                        while ($row = $rs->fetch_assoc()) {
+                                        while ($rs && ($row = $rs->fetch_assoc())) {
                                             echo '
                                         <div class="col-xl-6 col-md-6">
                                         <div class="card">
@@ -215,7 +229,7 @@ $acads = $row['description'];
                                                 <div class="card-block">
                                                     <div class="row align-items-center">
                                                         <div class="col">
-                                                            <h3 class="m-b-5 text-uppercase"><b>' . $row['lname'] . ', ' . $row['fname'] . ' ' . $row['mname'][0] . '</b></h3>
+                                                            <h3 class="m-b-5 text-uppercase"><b>' . htmlspecialchars($row['lname'] . ', ' . $row['fname'] . ' ' . (isset($row['mname'][0]) ? $row['mname'][0] . '.' : '')) . '</b></h3>
                                                         </div>
                                                         <div class="col col-auto text-right">
                                                             <i class="feather icon-check-circle f-50 text-c-white"></i>
@@ -336,7 +350,11 @@ $acads = $row['description'];
                                                 vt.totalvote
                                             DESC";
                                         $rs = $conn->query($sqlt);
-                                        if ($rs->num_rows > 0) { ?>
+                                        if (!$rs && strpos($conn->error ?? '', 'Unknown column') !== false) {
+                                            $sqlt = "SELECT CONCAT(UPPER(v.lname), ', ', UPPER(v.fname)) AS fname, pos.description, vt.totalvote, pos.max_vote, c.img FROM candidate c INNER JOIN voters v ON c.stud_id = v.stud_id INNER JOIN partylist p ON c.p_id = p.p_id INNER JOIN POSITION pos ON c.pos_id = pos.pos_id INNER JOIN election_title et ON et.acad_id = c.acad_id LEFT JOIN (SELECT candidate_id, COUNT(DISTINCT voter_id) AS totalvote FROM vote GROUP BY candidate_id) vt ON vt.candidate_id = c.c_id WHERE c.acad_id = $acad AND (SELECT COUNT(*) FROM candidate c2 LEFT JOIN (SELECT candidate_id, COUNT(DISTINCT voter_id) AS totalvote FROM vote GROUP BY candidate_id) vt2 ON vt2.candidate_id = c2.c_id WHERE c2.pos_id = c.pos_id AND vt2.totalvote > vt.totalvote) < pos.max_vote ORDER BY pos.priority ASC, vt.totalvote DESC";
+                                            $rs = $conn->query($sqlt);
+                                        }
+                                        if ($rs && $rs->num_rows > 0) { ?>
 
                                             <?php foreach ($rs as $row) { ?>
                                                 <div class="col-lg-6 col-xl-3 col-md-6">
@@ -380,23 +398,26 @@ $acads = $row['description'];
     <?php include 'nav/script.php'; ?>
 
     <?php
+    $flashMsg = '';
+    $flashType = 'success';
     if (isset($_SESSION['response']) && $_SESSION['response'] != "") {
-
-        ?>
-        <script>
-            swal({
-                title: "<?php echo $_SESSION['response']; ?>",
-                icon: "<?php echo $_SESSION['type']; ?>",
-                button: "Exit!",
-            })
-        </script>
-        <?php unset($_SESSION['response']);
+        $flashMsg = is_array($_SESSION['response']) ? implode(' ', $_SESSION['response']) : $_SESSION['response'];
+        $flashType = isset($_SESSION['type']) ? $_SESSION['type'] : 'success';
+        unset($_SESSION['response'], $_SESSION['type']);
     }
     ?>
     <?php include 'modalplatform.php'; ?>
 
     <script>
         $(document).ready(function () {
+            var flashMsg = <?php echo json_encode($flashMsg); ?>;
+            var flashType = <?php echo json_encode($flashType); ?>;
+            $('.theme-loader').fadeOut(200, function () {
+                $(this).remove();
+                if (flashMsg) {
+                    swal({ title: flashMsg, icon: flashType, button: "OK" });
+                }
+            });
             $(document).on('click', '.plat', function (e) {
                 $('#platform1').modal('show');
                 var id = $(this).data('id');

@@ -11,6 +11,12 @@ if (isset($_POST['submit'])) {
     $pos_id = (int) $_POST['position'];
     $department_id = (int) $_POST['department_id'];
     $platform = $conn->real_escape_string($_POST['platform'] ?? '');
+    // Prevent same student from being a general candidate in the same academic year
+    $checkGeneral = $conn->query("SELECT 1 FROM candidate WHERE acad_id='$acad' AND stud_id='$stud' LIMIT 1");
+    if ($checkGeneral && $checkGeneral->num_rows > 0) {
+        $_SESSION['response'] = "This student is already a general candidate and cannot be added to department candidates.";
+        $_SESSION['type'] = "warning";
+    } else {
     if ($_FILES['files']['name'] == '') {
         $dirs = "libraries/img/logo.png";
     } else {
@@ -32,6 +38,7 @@ if (isset($_POST['submit'])) {
     } else {
         $_SESSION['response'] = "An error has occurred.";
         $_SESSION['type'] = "warning";
+    }
     }
 }
 if (isset($_POST['update'])) {
@@ -135,7 +142,14 @@ if (isset($_POST['update'])) {
                                                                 <thead><tr><th>#</th><th>Img</th><th>Candidate</th><th>Department</th><th>Position</th><th style="display:none">dc_id</th><th style="display:none">pos_id</th><th style="display:none">stud_id</th><th style="display:none">img</th><th style="display:none">platform</th><th>Action</th></tr></thead>
                                                                 <tbody>
                                                                 <?php
-                                                                $sql = "SELECT dc.*, dv.fname, dv.lname, dv.mname, dp.description AS pos_desc, d.department_name FROM dept_candidate dc INNER JOIN dept_voters dv ON dc.stud_id = dv.stud_id AND dc.acad_id = dv.acad_id INNER JOIN dept_position dp ON dc.pos_id = dp.dp_id AND dc.acad_id = dp.acad_id LEFT JOIN departments d ON dc.department_id = d.department_id WHERE dc.acad_id='$acad' ORDER BY dp.priority, dv.lname";
+                                                                // Use shared voters table instead of legacy dept_voters
+                                                                $sql = "SELECT dc.*, v.fname, v.lname, v.mname, dp.description AS pos_desc, d.department_name
+                                                                        FROM dept_candidate dc
+                                                                        INNER JOIN voters v ON dc.stud_id = v.stud_id AND dc.acad_id = v.acad_id
+                                                                        INNER JOIN dept_position dp ON dc.pos_id = dp.dp_id AND dc.acad_id = dp.acad_id
+                                                                        LEFT JOIN departments d ON dc.department_id = d.department_id
+                                                                        WHERE dc.acad_id='$acad'
+                                                                        ORDER BY dp.priority, v.lname";
                                                                 $res = $conn->query($sql);
                                                                 $i = 1;
                                                                 while ($row = $res ? $res->fetch_assoc() : null) {

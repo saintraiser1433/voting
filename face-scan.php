@@ -10,7 +10,7 @@ $srcs = array();
 $faceIdMap = array();
 
 if ($voting_mode === 'department') {
-    $sql = "SELECT dv_id, lname, fname, mname FROM dept_voters WHERE is_verified = 1 AND dv_id = '$id'";
+    $sql = "SELECT v_id, lname, fname, mname FROM voters WHERE is_verified = 1 AND v_id = '$id' AND department_id IS NOT NULL";
 } else {
     $sql = "SELECT v_id, lname, fname, mname FROM voters WHERE is_verified = 1 AND v_id = '$id'";
 }
@@ -19,7 +19,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $name = $row['lname'] . "," . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '');
         $srcs[] = $name;
-        $faceIdMap[$name] = $voting_mode === 'department' ? $row['dv_id'] : $row['v_id'];
+        $faceIdMap[$name] = $row['v_id'];
     }
 }
 $redirectAfterFace = ($voting_mode === 'department') ? 'department_home.php' : 'home.php';

@@ -6,6 +6,7 @@ if (!isset($_SESSION['at'])) {
     exit;
 }
 
+// Department voters now use shared voters table with department_id and is_verified
 if (isset($_POST['submit'])) {
     $studid = $conn->real_escape_string($_POST['studid']);
     $fname = $conn->real_escape_string($_POST['fname']);
@@ -15,7 +16,9 @@ if (isset($_POST['submit'])) {
     $strand = $conn->real_escape_string($_POST['strand']);
     $section = $conn->real_escape_string($_POST['section']);
     $department_id = (int) $_POST['department_id'];
-    $sql = "INSERT INTO dept_voters (stud_id, acad_id, fname, lname, mname, year_level, strand, section, department_id, password, is_verified) VALUES ('$studid', '$acad', '$fname', '$lname', '$mname', '$yearlevel', '$strand', '$section', '$department_id', '', 0)";
+
+    $sql = "INSERT INTO voters (stud_id, acad_id, fname, lname, mname, grade_level, strand, section, department_id, password, is_verified)
+            VALUES ('$studid', '$acad', '$fname', '$lname', '$mname', '$yearlevel', '$strand', '$section', '$department_id', '', 0)";
     if ($conn->query($sql)) {
         $_SESSION['response'] = "Department voter added.";
         $_SESSION['type'] = "success";
@@ -33,7 +36,8 @@ if (isset($_POST['update'])) {
     $strand = $conn->real_escape_string($_POST['strand']);
     $section = $conn->real_escape_string($_POST['section']);
     $department_id = (int) $_POST['department_id'];
-    $sql = "UPDATE dept_voters SET fname='$fname', lname='$lname', mname='$mname', year_level='$yearlevel', strand='$strand', section='$section', department_id='$department_id' WHERE dv_id='$vid'";
+    $sql = "UPDATE voters SET fname='$fname', lname='$lname', mname='$mname', grade_level='$yearlevel', strand='$strand', section='$section', department_id='$department_id'
+            WHERE v_id='$vid'";
     if ($conn->query($sql)) {
         $_SESSION['response'] = "Department voter updated.";
         $_SESSION['type'] = "success";
@@ -44,7 +48,7 @@ if (isset($_POST['update'])) {
 }
 if (isset($_GET['re'])) {
     $re = (int) $_GET['re'];
-    $conn->query("UPDATE dept_voters SET password='' WHERE dv_id='$re'");
+    $conn->query("UPDATE voters SET password='' WHERE v_id='$re'");
     $_SESSION['response'] = "Department voter password reset.";
     $_SESSION['type'] = "success";
 }
@@ -119,53 +123,38 @@ if (isset($_GET['re'])) {
                                     <div class="page-body">
                                         <div class="row">
                                             <div class="col-12"><button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#default-Modal">Add Department Voter</button></div>
-                                            <div class="col-12 col-lg-6">
+                                            <div class="col-12">
                                                 <div class="card">
-                                                    <div class="card bg-warning text-white"><div class="card-block"><h3 class="m-b-5"><b>UNVERIFIED DEPARTMENT VOTERS</b></h3></div></div>
-                                                    <div class="card-block-big">
-                                                        <div class="dt-responsive table-responsive">
-                                                            <table class="table table-striped table-bordered nowrap w-100" id="table-unverified">
-                                                                <thead><tr><th>#</th><th>Student ID</th><th>Full Name</th><th>Year</th><th>Strand</th><th>Section</th><th>Department</th><th style="display:none">dv_id</th><th>Action</th></tr></thead>
-                                                                <tbody>
-                                                                <?php
-                                                                $sql = "SELECT dv.*, d.department_name FROM dept_voters dv LEFT JOIN departments d ON dv.department_id = d.department_id WHERE dv.acad_id='$acad' AND dv.is_verified=0 ORDER BY dv.date_issued DESC";
-                                                                $res = $conn->query($sql);
-                                                                $i = 1;
-                                                                $unverified_count = 0;
-                                                                while ($res && ($row = $res->fetch_assoc())) {
-                                                                    $unverified_count++;
-                                                                    $m = isset($row['mname'][0]) ? $row['mname'][0] : '';
-                                                                    echo '<tr><td>' . $i++ . '</td><td>' . htmlspecialchars($row['stud_id']) . '</td><td class="text-uppercase">' . htmlspecialchars($row['lname'] . ', ' . $row['fname'] . ' ' . $m) . '</td><td>' . (int)$row['year_level'] . '</td><td>' . htmlspecialchars($row['strand']) . '</td><td>' . htmlspecialchars($row['section']) . '</td><td>' . htmlspecialchars($row['department_name'] ?? '-') . '</td><td style="display:none">' . $row['dv_id'] . '</td>';
-                                                                    echo '<td><a href="#" class="approve badge badge-success p-2 text-white" title="Approve"><i class="fa fa-thumbs-up"></i></a> | <a href="#" class="disapprove badge badge-danger p-2 text-white" title="Disapprove"><i class="fa fa-thumbs-down"></i></a></td></tr>';
-                                                                }
-                                                                if ($unverified_count === 0) {
-                                                                    echo '<tr><td colspan="9" class="text-center text-muted py-4">No data available in table</td></tr>';
-                                                                }
-                                                                ?></tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-lg-6">
-                                                <div class="card">
-                                                    <div class="card bg-c-green text-white"><div class="card-block"><h3 class="m-b-5"><b>VERIFIED DEPARTMENT VOTERS</b></h3></div></div>
+                                                    <div class="card bg-c-green text-white"><div class="card-block"><h3 class="m-b-5"><b>DEPARTMENT VOTERS</b></h3></div></div>
                                                     <div class="card-block-big">
                                                         <div class="dt-responsive table-responsive">
                                                             <table class="table table-striped table-bordered nowrap w-100" id="table-verified">
-                                                                <thead><tr><th>#</th><th>Student ID</th><th>Full Name</th><th>Year</th><th>Strand</th><th>Section</th><th>Department</th><th style="display:none">dv_id</th><th style="display:none">dept_id</th><th style="display:none">fname</th><th style="display:none">lname</th><th style="display:none">mname</th><th style="display:none">strand</th><th style="display:none">section</th><th style="display:none">yearlevel</th><th>Action</th></tr></thead>
+                                                                <thead><tr><th>#</th><th>Student ID</th><th>Full Name</th><th>Year</th><th>Strand</th><th>Section</th><th>Department</th><th>Status</th><th style="display:none">v_id</th><th style="display:none">dept_id</th><th style="display:none">fname</th><th style="display:none">lname</th><th style="display:none">mname</th><th style="display:none">strand</th><th style="display:none">section</th><th style="display:none">yearlevel</th><th>Action</th></tr></thead>
                                                                 <tbody>
                                                                 <?php
-                                                                $sql = "SELECT dv.*, d.department_name FROM dept_voters dv LEFT JOIN departments d ON dv.department_id = d.department_id WHERE dv.acad_id='$acad' AND dv.is_verified=1 ORDER BY dv.date_issued DESC";
+                                                                // Show the same set of voters as General → Verified Voters,
+                                                                // just with an extra Department column for assignment.
+                                                                $sql = "SELECT v.*, d.department_name
+                                                                        FROM voters v
+                                                                        LEFT JOIN departments d ON v.department_id = d.department_id
+                                                                        WHERE v.acad_id='$acad' AND v.is_verified = 1
+                                                                        ORDER BY v.date_issued DESC";
                                                                 $res = $conn->query($sql);
+                                                                // If department_id column is missing (migration not run yet),
+                                                                // fall back to simple voters query without join so table still works.
+                                                                if (!$res && strpos($conn->error, 'Unknown column') !== false) {
+                                                                    $sql = "SELECT * FROM voters WHERE acad_id='$acad' AND is_verified = 1 ORDER BY date_issued DESC";
+                                                                    $res = $conn->query($sql);
+                                                                }
                                                                 $i = 1;
                                                                 $verified_count = 0;
                                                                 while ($res && ($row = $res->fetch_assoc())) {
                                                                     $verified_count++;
                                                                     $m = isset($row['mname'][0]) ? $row['mname'][0] : '';
-                                                                    echo '<tr><td>' . $i++ . '</td><td>' . htmlspecialchars($row['stud_id']) . '</td><td class="text-uppercase">' . htmlspecialchars($row['lname'] . ', ' . $row['fname'] . ' ' . $m) . '</td><td>' . (int)$row['year_level'] . '</td><td>' . htmlspecialchars($row['strand']) . '</td><td>' . htmlspecialchars($row['section']) . '</td><td>' . htmlspecialchars($row['department_name'] ?? '-') . '</td>';
-                                                                    echo '<td style="display:none">' . $row['dv_id'] . '</td><td style="display:none">' . $row['department_id'] . '</td><td style="display:none">' . htmlspecialchars($row['fname']) . '</td><td style="display:none">' . htmlspecialchars($row['lname']) . '</td><td style="display:none">' . htmlspecialchars($row['mname']) . '</td><td style="display:none">' . htmlspecialchars($row['strand']) . '</td><td style="display:none">' . htmlspecialchars($row['section']) . '</td><td style="display:none">' . $row['year_level'] . '</td>';
-                                                                    echo '<td><a href="#default-Modal" class="edit badge badge-warning p-2 text-white" title="Edit"><i class="fa fa-edit"></i></a> | <a href="#" class="delete badge badge-danger p-2 text-white" title="Delete"><i class="fa fa-trash"></i></a> | <a href="?re=' . $row['dv_id'] . '" class="myd badge badge-info p-2 text-white" title="Reset password"><i class="fa fa-recycle"></i></a></td></tr>';
+                                                                    $status = ((int)$row['is_verified'] === 1) ? '<span class="badge badge-success">Verified</span>' : '<span class="badge badge-warning">Unverified</span>';
+                                                                    echo '<tr><td>' . $i++ . '</td><td>' . htmlspecialchars($row['stud_id']) . '</td><td class="text-uppercase">' . htmlspecialchars($row['lname'] . ', ' . $row['fname'] . ' ' . $m) . '</td><td>' . (int)$row['grade_level'] . '</td><td>' . htmlspecialchars($row['strand']) . '</td><td>' . htmlspecialchars($row['section']) . '</td><td>' . htmlspecialchars($row['department_name'] ?? '-') . '</td><td>' . $status . '</td>';
+                                                                    echo '<td style="display:none">' . $row['v_id'] . '</td><td style="display:none">' . $row['department_id'] . '</td><td style="display:none">' . htmlspecialchars($row['fname']) . '</td><td style="display:none">' . htmlspecialchars($row['lname']) . '</td><td style="display:none">' . htmlspecialchars($row['mname']) . '</td><td style="display:none">' . htmlspecialchars($row['strand']) . '</td><td style="display:none">' . htmlspecialchars($row['section']) . '</td><td style="display:none">' . $row['grade_level'] . '</td>';
+                                                                    echo '<td><a href="#default-Modal" class="edit badge badge-warning p-2 text-white" title="Edit"><i class="fa fa-edit"></i></a> | <a href="#" class="delete badge badge-danger p-2 text-white" title="Delete"><i class="fa fa-trash"></i></a> | <a href="?re=' . $row['v_id'] . '" class="myd badge badge-info p-2 text-white" title="Reset password"><i class="fa fa-recycle"></i></a></td></tr>';
                                                                 }
                                                                 if ($verified_count === 0) {
                                                                     echo '<tr><td colspan="16" class="text-center text-muted py-4">No data available in table</td></tr>';
@@ -206,15 +195,18 @@ if (isset($_GET['re'])) {
         $(document).on('click', '.edit', function () {
             var $tr = $(this).closest('tr');
             var tds = $tr.find('td');
-            $('#idhidden').val($.trim(tds.eq(7).text()));
+            // Column indices (including hidden):
+            // 0:#, 1:stud_id, 2:full name, 3:year, 4:strand, 5:section, 6:department, 7:status,
+            // 8:v_id, 9:dept_id, 10:fname, 11:lname, 12:mname, 13:strand, 14:section, 15:yearlevel, 16:action
+            $('#idhidden').val($.trim(tds.eq(8).text()));          // v_id
             $('#studid').val($.trim(tds.eq(1).text())).attr('readonly', true);
-            $('#department_id').val($.trim(tds.eq(8).text()));
-            $('#fname').val($.trim(tds.eq(9).text()));
-            $('#lname').val($.trim(tds.eq(10).text()));
-            $('#mname').val($.trim(tds.eq(11).text()));
+            $('#department_id').val($.trim(tds.eq(9).text()));
+            $('#fname').val($.trim(tds.eq(10).text()));
+            $('#lname').val($.trim(tds.eq(11).text()));
+            $('#mname').val($.trim(tds.eq(12).text()));
+            $('#strand').val($.trim(tds.eq(13).text()));
+            $('#section').val($.trim(tds.eq(14).text()));
             $('#yearlevel').val($.trim(tds.eq(15).text()));
-            $('#strand').val($.trim(tds.eq(12).text()));
-            $('#section').val($.trim(tds.eq(13).text()));
             $('#default-Modal').modal('show');
             $('.modal-titles').html('Update Department Voter');
             $('#submits').remove();
@@ -222,29 +214,32 @@ if (isset($_GET['re'])) {
         });
         $(document).on('click', '.delete', function (e) {
             e.preventDefault();
-            var dv_id = $(this).closest('tr').find('td').eq(7).text();
-            var that = this;
-            swal({ title: "Are you sure?", text: "This will remove the department voter.", icon: "warning", buttons: true, dangerMode: true })
-                .then(function(willDelete) {
-                    if (willDelete) {
-                        $.ajax({ method: "POST", url: "ajax/delete_dept_voter.php", data: { myids: dv_id },
-                            success: function () { swal("Deleted.", { icon: "success" }).then(function() { location.reload(); }); }
-                        });
-                    }
-                });
-        });
-        $(document).on('click', '.approve', function (e) {
-            e.preventDefault();
-            var dv_id = $(this).closest('tr').find('td').eq(7).text();
-            $.ajax({ method: "POST", url: "ajax/checkVerified_dept.php", data: { status: 1, myids: dv_id },
-                success: function () { swal("Approved.", { icon: "success" }).then(function() { location.reload(); }); }
-            });
-        });
-        $(document).on('click', '.disapprove', function (e) {
-            e.preventDefault();
-            var dv_id = $(this).closest('tr').find('td').eq(7).text();
-            $.ajax({ method: "POST", url: "ajax/checkVerified_dept.php", data: { status: 0, myids: dv_id },
-                success: function () { swal("Disapproved.", { icon: "success" }).then(function() { location.reload(); }); }
+            var currentRow = $(this).closest("tr");
+            // Hidden v_id is in column index 8
+            var vId = $.trim(currentRow.find("td:eq(8)").text());
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will be able to recover this department voter in Archives.",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then(function (willDelete) {
+                if (willDelete) {
+                    $.ajax({
+                        method: "POST",
+                        url: "ajax/delete_dept_voter.php",
+                        data: { myids: vId },
+                        success: function () {
+                            swal("Poof! The department voter has been archived.", {
+                                icon: "success",
+                            }).then(function () {
+                                location.reload();
+                            });
+                        }
+                    });
+                } else {
+                    swal("The department voter is safe!");
+                }
             });
         });
     });

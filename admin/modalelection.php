@@ -35,6 +35,24 @@ $save_url = 'save_election_settings.php?return=' . urlencode($current_page);
                         <input type="hidden" class="form-control" name="idhidden" value="<?php echo $rowww ? (int)$rowww['id'] : ''; ?>">
                         <input type="text" class="form-control" name="titles" value="<?php echo $rowww ? htmlspecialchars($rowww['title']) : ''; ?>" placeholder="e.g. SSC Election 2024-2025">
                     </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Start date & time (when voting opens):</label>
+                        <input type="datetime-local" class="form-control" name="date_start" value="<?php
+                            if ($rowww && !empty($rowww['date_start'])) {
+                                echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($rowww['date_start'])));
+                            }
+                        ?>">
+                        <small class="text-muted">Leave empty for no start limit.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">End date & time (when voting closes):</label>
+                        <input type="datetime-local" class="form-control" name="date_end" value="<?php
+                            if ($rowww && !empty($rowww['date_end'])) {
+                                echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($rowww['date_end'])));
+                            }
+                        ?>">
+                        <small class="text-muted">Voting will auto-close after this time. Leave empty for manual close only.</small>
+                    </div>
 
                 </div>
                 <div class="modal-footer" id="footersa">

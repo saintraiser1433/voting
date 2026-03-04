@@ -20,7 +20,10 @@ while ($row = $query->fetch_assoc()) {
     $downdisable = ($total > 0 && isset($row['priority']) && $row['priority'] == $total) ? 'disabled' : '';
 
     $candidate = '';
-    $cq = $conn->query("SELECT dc.*, dv.fname, dv.lname, dv.mname FROM dept_candidate dc INNER JOIN dept_voters dv ON dc.stud_id = dv.stud_id AND dc.acad_id = dv.acad_id WHERE dc.acad_id='$acad' AND dc.pos_id='" . (int)$row['dp_id'] . "'");
+    $cq = $conn->query("SELECT dc.*, v.fname, v.lname, v.mname
+                        FROM dept_candidate dc
+                        INNER JOIN voters v ON dc.stud_id = v.stud_id AND dc.acad_id = v.acad_id
+                        WHERE dc.acad_id='$acad' AND dc.pos_id='" . (int)$row['dp_id'] . "'");
     if ($cq && $cq->num_rows > 0) {
         while ($crow = $cq->fetch_assoc()) {
             $img = !empty($crow['img']) ? $crow['img'] : 'libraries/img/logo.png';

@@ -16,18 +16,17 @@ $output = "
     </head>
     <body>
         <img src='../libraries/img/glanlogo.png' width='100px;' height='100px;'>
-        <div style='margin-top:-100px; text-align:center; font-family:arial; line-height:3px'>
-            <h6>GLAN INSTITUTE OF TECHNOLOGY</h6>
-            <h6>SARANGANI, PHILIPPINES</h6>
-             <center><h3 style='font-family:Arial;'>SCHOOL YEAR: " . $rowqq['description'] . " </h3></center>
-             <center><h3 style='font-family:Arial;'>OFFICAL TALLY FOR GIT ELECTION " . $rowqq['description'] . " </h3></center> 
-             
+        <div style='margin-top:-100px; text-align:center; font-family:Arial, sans-serif; line-height:1.4'>
+            <h4 style='margin:0;'>GLAN INSTITUTE OF TECHNOLOGY</h4>
+            <p style='margin:0; font-size:12px;'>Sarangani, Philippines</p>
+            <h5 style='margin-top:10px;'>SCHOOL YEAR: " . htmlspecialchars($rowqq['description']) . "</h5>
+            <h5 style='margin-top:4px;'>OFFICIAL TALLY FOR GIT ELECTION " . htmlspecialchars($rowqq['description']) . "</h5>
         </div>
 
 ";
 $date = date('Y-m-d');
 $output .= "<p style='font-weight:bold'>Date Printed :  $date </p>";
-$sqlx = "SELECT * FROM position where acad_id='$acad' ORDER BY priority ASC";
+$sqlx = "SELECT * FROM position WHERE acad_id='$acad' ORDER BY priority ASC";
 
 $rsx = $conn->query($sqlx);
 if (!$rsx) {
@@ -38,28 +37,29 @@ if ($rsx->num_rows > 0) {
     $i = 1;
 
     foreach ($rsx as $rows) {
-        $output .= "<p style='text-transform:uppercase; font-weight:bold'>" . $rows['description'] . "</p>";
+        $output .= "<h4 style='text-transform:uppercase; font-weight:bold; margin-top:15px; margin-bottom:5px;'>" . htmlspecialchars($rows['description']) . "</h4>";
         $dt = $rows['pos_id'];
-        $sqlb = "SELECT  CONCAT(
-        UPPER(voters.lname),
-        ', ',
-        UPPER(voters.fname)
-    ) AS fname,
-    c_id
-         FROM candidate LEFT JOIN voters ON candidate.stud_id=voters.stud_id LEFT JOIN partylist ON candidate.p_id=partylist.p_id WHERE candidate.acad_id='$acad' and candidate.pos_id = $dt";
+        $sqlb = "SELECT CONCAT(UPPER(voters.lname), ', ', UPPER(voters.fname)) AS fname, c_id
+                 FROM candidate
+                 LEFT JOIN voters ON candidate.stud_id = voters.stud_id
+                 LEFT JOIN partylist ON candidate.p_id = partylist.p_id
+                 WHERE candidate.acad_id='$acad' AND candidate.pos_id = $dt";
         $rxc = $conn->query($sqlb);
         if ($rxc->num_rows > 0) {
+            $output .= "<table width='100%' cellpadding='4' cellspacing='0' style='border-collapse:collapse; font-size:12px; margin-bottom:5px;'>
+                            <tbody>";
             foreach ($rxc as $rowt) {
-
                 $id = $rowt['c_id'];
-                $sqltt = "SELECT * FROM vote WHERE acad_id='$acad' and candidate_id = $id";
+                $sqltt = "SELECT COUNT(*) AS votes FROM vote WHERE acad_id='$acad' AND candidate_id = $id";
                 $rsst = $conn->query($sqltt);
-                $output .= "
-            <ul class='candidate-list'>
-                <li class='text-capitalize'>" . htmlspecialchars($rowt['fname']) . " - <span style='font-weight:bold'>" . @$rsst->num_rows . "</span></li>
-            </ul>
-        ";
+                $votes = ($rsst && $rowVotes = $rsst->fetch_assoc()) ? (int)$rowVotes['votes'] : 0;
+                $output .= "<tr>
+                                <td style='padding-left:15px;'>• " . htmlspecialchars($rowt['fname']) . "</td>
+                                <td width='60' align='right' style='font-weight:bold;'>" . $votes . "</td>
+                            </tr>";
             }
+            $output .= "    </tbody>
+                        </table>";
         }
 
     }
@@ -69,59 +69,37 @@ if ($rsx->num_rows > 0) {
 
 
 $sqlt = "SELECT
-    CONCAT(
-        UPPER(v.lname),
-        ', ',
-        UPPER(v.fname)
-    ) AS fname,
-    UPPER(pos.description) as description,
+    CONCAT(UPPER(v.lname), ', ', UPPER(v.fname)) AS fname,
+    UPPER(pos.description) AS description,
     vt.totalvote,
     pos.max_vote,
-    UPPER(p.party_name) as party_name,
-    c.p_id
-FROM
-    candidate c
-INNER JOIN voters v ON
-    c.stud_id = v.stud_id
-INNER JOIN partylist p ON
-    c.p_id = p.p_id
-INNER JOIN POSITION pos ON
-    c.pos_id = pos.pos_id
-INNER JOIN election_title et ON
-    et.acad_id = c.acad_id
+    UPPER(p.party_name) AS party_name,
+    c.p_id,
+    c.c_id
+FROM candidate c
+INNER JOIN voters v ON c.stud_id = v.stud_id
+INNER JOIN partylist p ON c.p_id = p.p_id
+INNER JOIN position pos ON c.pos_id = pos.pos_id
+INNER JOIN election_title et ON et.acad_id = c.acad_id
 LEFT JOIN (
-    SELECT 
-        candidate_id,
-        COUNT(DISTINCT voter_id) AS totalvote
-    FROM
-        vote
-    GROUP BY
-        candidate_id
-) vt ON
-    vt.candidate_id = c.c_id
-WHERE
-    c.acad_id = $acad AND (
-        SELECT
-            COUNT(*)
-        FROM
-            candidate c2
+    SELECT candidate_id, COUNT(DISTINCT voter_id) AS totalvote
+    FROM vote
+    GROUP BY candidate_id
+) vt ON vt.candidate_id = c.c_id
+WHERE c.acad_id = $acad
+  AND (
+        SELECT COUNT(*)
+        FROM candidate c2
         LEFT JOIN (
-            SELECT 
-                candidate_id,
-                COUNT(DISTINCT voter_id) AS totalvote
-            FROM
-                vote
-            GROUP BY
-                candidate_id
-        ) vt2 ON
-            vt2.candidate_id = c2.c_id
-        WHERE
-            c2.pos_id = c.pos_id AND vt2.totalvote > vt.totalvote
-    ) < pos.max_vote
-AND et.is_finished = 1
-ORDER BY
-    pos.priority ASC,
-    vt.totalvote DESC";
+            SELECT candidate_id, COUNT(DISTINCT voter_id) AS totalvote
+            FROM vote
+            GROUP BY candidate_id
+        ) vt2 ON vt2.candidate_id = c2.c_id
+        WHERE c2.pos_id = c.pos_id AND vt2.totalvote > vt.totalvote
+      ) < pos.max_vote
+  AND et.is_finished = 1
+GROUP BY c.c_id
+ORDER BY pos.priority ASC, vt.totalvote DESC";
 
 $rs = $conn->query($sqlt);
 
@@ -130,9 +108,9 @@ if (!$rs) {
 }
 
 if ($rs->num_rows > 0) {
-    $i = 1;
     $output .= "
-        <center><h3 style='font-family:Arial;'>OFFICAL RESULT FOR GIT ELECTION 2024 </h3></center> 
+        <hr style='margin-top:20px; margin-bottom:10px;'>
+        <center><h4 style='font-family:Arial; margin:0;'>OFFICIAL RESULT FOR GIT ELECTION " . htmlspecialchars($rowqq['description']) . " </h4></center> 
     ";
     foreach ($rs as $row) {
         if ($row['p_id'] == 0) {

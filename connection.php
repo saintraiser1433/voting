@@ -1,6 +1,11 @@
 <?php
+
 session_start();
 $conn = new mysqli("localhost", "root", "", "votes");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 $query = "SELECT * from acad_tbl where status = 1";
 $result = $conn->query($query);

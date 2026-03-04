@@ -10,17 +10,25 @@ if (isset($_POST['submits'])) {
 
     if ($voting_mode === 'department') {
         if (!isset($_POST['myps1']) || $_POST['myps1'] === '') {
-            $sql = "SELECT * FROM dept_voters WHERE stud_id='$username' AND CONCAT(lname,stud_id)='$password' AND acad_id='$acad' AND is_verified=1";
+            // Legacy login: default password is last name + student ID (case-insensitive)
+            $sql = "SELECT *
+                FROM voters
+                WHERE stud_id = '$username'
+                AND LOWER(CONCAT(lname, stud_id)) = LOWER('$password')
+                AND acad_id = '$acad'
+                AND department_id IS NOT NULL
+                AND is_verified = 1";
         } else {
-            $sql = "SELECT * FROM dept_voters WHERE stud_id='$username' AND password='$md5' AND acad_id='$acad' AND is_verified=1";
+            // Normal login with stored MD5 hash in voters.password
+            $sql = "SELECT * FROM voters WHERE stud_id='$username' AND password='$md5' AND acad_id='$acad' AND department_id IS NOT NULL AND is_verified=1";
         }
         $rs = $conn->query($sql);
         $row = $rs && $rs->num_rows > 0 ? $rs->fetch_assoc() : null;
         if ($row) {
             $_SESSION['voting_mode'] = 'department';
             $_SESSION['mypass'] = (isset($_POST['myps1']) && $_POST['myps1'] !== '') ? $row['password'] : 's';
-            $_SESSION['v_id'] = $row['dv_id'];
-            $_SESSION['face'] = $row['dv_id'];
+            $_SESSION['v_id'] = $row['v_id'];
+            $_SESSION['face'] = $row['v_id'];
             $_SESSION['dept_id'] = $row['department_id'];
             $m = isset($row['mname'][0]) ? $row['mname'][0] . '.' : '';
             $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . $m;
@@ -35,7 +43,12 @@ if (isset($_POST['submits'])) {
         }
     } else {
         if (!isset($_POST['myps1']) || $_POST['myps1'] === '') {
-            $sql = "SELECT * FROM voters WHERE stud_id='$username' AND CONCAT(lname,stud_id)='$password' AND acad_id='$acad' AND is_verified=1";
+            $sql = "SELECT *
+            FROM voters
+            WHERE stud_id = '$username'
+            AND LOWER(CONCAT(lname, stud_id)) = LOWER('$password')
+            AND acad_id = '$acad'
+            AND is_verified = 1";
         } else {
             $sql = "SELECT * FROM voters WHERE stud_id='$username' AND password='$md5' AND acad_id='$acad' AND is_verified=1";
         }
@@ -93,10 +106,6 @@ if (isset($_POST['submits'])) {
                     </div>
                     <?php unset($_SESSION['response']);
                 } ?>
-                <div class="mb-3 d-flex justify-content-around" style="gap: 8px;">
-                    <button type="button" class="btn btn-outline-primary flex-fill active" id="tabGeneral" data-mode="general">General Voting</button>
-                    <button type="button" class="btn btn-outline-secondary flex-fill" id="tabDepartment" data-mode="department">Department Voting</button>
-                </div>
                 <h2 class="title">Welcome</h2>
                 <div class="input-div one">
                     <div class="i">
@@ -118,12 +127,12 @@ if (isset($_POST['submits'])) {
                         <input type="password" name="password" class="input">
                     </div>
                 </div>
-                <div class="linking">
+                <div class="linking mt-2">
                     <a href="signup.php">If not register kindly click this link</a>
                 </div>
 
 
-                <button type="submit" name="submits" class="btn">Login </button>
+                <button type="submit" name="submits" class="btn" id="btnLogin">Login</button>
             </form>
         </div>
     </div>
@@ -134,23 +143,19 @@ if (isset($_POST['submits'])) {
 </html>
 <script>
     $(document).ready(function () {
-        $('#tabGeneral').on('click', function () {
-            $('#voting_mode').val('general');
-            $('#tabGeneral').addClass('active btn-primary').removeClass('btn-outline-primary');
-            $('#tabDepartment').removeClass('active btn-primary').addClass('btn-outline-secondary');
-        });
-        $('#tabDepartment').on('click', function () {
-            $('#voting_mode').val('department');
-            $('#tabDepartment').addClass('active btn-primary').removeClass('btn-outline-secondary');
-            $('#tabGeneral').removeClass('active btn-primary').addClass('btn-outline-primary');
-        });
+        // Always default to general voting on login
+        $('#voting_mode').val('general');
+
         $('#username').keyup(function () {
             var news = $(this).val();
-            var mode = $('#voting_mode').val();
+            if (!news) {
+                $('#myps').val('');
+                return;
+            }
             $.ajax({
                 method: "POST",
                 url: "ajax/usernamepass.php",
-                data: { myids: news, mode: mode },
+                data: { myids: news, mode: 'general' },
                 success: function (html) {
                     $('#myps').val(html);
                 }

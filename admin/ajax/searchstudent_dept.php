@@ -6,13 +6,13 @@ if (isset($_POST['myids'])) {
     $fname = $gr = $department_name = '';
     $department_id = 0;
     $stat = 0;
-    $sql = "SELECT dv.*, d.department_name FROM dept_voters dv LEFT JOIN departments d ON dv.department_id = d.department_id WHERE dv.stud_id='$my' AND dv.acad_id='$acad' AND dv.is_verified=1";
+    $sql = "SELECT v.*, d.department_name FROM voters v LEFT JOIN departments d ON v.department_id = d.department_id WHERE v.stud_id='$my' AND v.acad_id='$acad' AND v.department_id IS NOT NULL AND v.is_verified=1";
     $res = $conn->query($sql);
     if ($res && $res->num_rows > 0) {
         $row = $res->fetch_assoc();
         $m = isset($row['mname'][0]) ? $row['mname'][0] . '.' : '';
         $fname = $row['lname'] . ", " . $row['fname'] . " " . $m;
-        $gr = $row['year_level'] . " " . $row['strand'] . "-" . $row['section'];
+        $gr = $row['grade_level'] . " " . $row['strand'] . "-" . $row['section'];
         $department_id = (int) $row['department_id'];
         $department_name = $row['department_name'] ?? '';
         $stat = 1;

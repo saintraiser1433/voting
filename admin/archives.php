@@ -211,11 +211,20 @@ if (!isset($_SESSION['at'])) {
                                                                 </thead>
                                                                 <tbody>
                                                                     <?php
-                                                                    $sql = "SELECT * FROM archives LEFT JOIN acad_tbl ON archives.acad_id=acad_tbl.acad_id";
+                                                                    // Be tolerant to schema where archives may use either grade_level or year_level
+                                                                    $gradeCol = 'grade_level';
+                                                                    $hasGrade = $conn->query("SHOW COLUMNS FROM archives LIKE 'grade_level'");
+                                                                    $hasYear = $conn->query("SHOW COLUMNS FROM archives LIKE 'year_level'");
+                                                                    if ($hasGrade && $hasGrade->num_rows === 0 && $hasYear && $hasYear->num_rows > 0) {
+                                                                        $gradeCol = 'year_level';
+                                                                    }
+
+                                                                    $sql = "SELECT archives.*, acad_tbl.description FROM archives LEFT JOIN acad_tbl ON archives.acad_id = acad_tbl.acad_id";
                                                                     $rs = $conn->query($sql);
                                                                     $i = 1;
-                                                                    while ($row = $rs->fetch_assoc()) {
-                                                                        ?>
+                                                                    if ($rs && $rs->num_rows > 0) {
+                                                                        while ($row = $rs->fetch_assoc()) {
+                                                                            ?>
 
                                                                         <tr>
                                                                             <th scope="row"><?php echo $i++; ?></th>
@@ -224,10 +233,13 @@ if (!isset($_SESSION['at'])) {
                                                                             </td>
 
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0]; ?>
+                                                                                <?php
+                                                                                $mname_display = !empty($row['mname']) ? substr($row['mname'], 0, 1) . '.' : '';
+                                                                                echo $row['lname'] . ", " . $row['fname'] . " " . $mname_display;
+                                                                                ?>
                                                                             </td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['grade_level']; ?>
+                                                                                <?php echo isset($row[$gradeCol]) ? $row[$gradeCol] : ''; ?>
                                                                             </td>
                                                                             <td class="text-uppercase">
                                                                                 <?php
@@ -241,10 +253,10 @@ if (!isset($_SESSION['at'])) {
                                                                                 ?>
                                                                             </td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['section']; ?>
+                                                                                <?php echo isset($row['section']) ? $row['section'] : ''; ?>
                                                                             </td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['description']; ?>
+                                                                                <?php echo isset($row['description']) ? $row['description'] : ''; ?>
                                                                             </td>
 
                                                                             <td>
@@ -258,7 +270,12 @@ if (!isset($_SESSION['at'])) {
                                                                                         class="fa fa-trash"></i></a>
                                                                             </td>
                                                                         </tr>
-                                                                    <?php } ?>
+                                                                    <?php
+                                                                        }
+                                                                    } else {
+                                                                        echo '<tr><td colspan="8" class="text-center text-muted">No archived voters found.</td></tr>';
+                                                                    }
+                                                                    ?>
                                                                 </tbody>
                                                                 <tfoot>
                                                                     <tr>

@@ -10,7 +10,14 @@ if (isset($_POST['submits'])) {
     $description = $conn->real_escape_string($_POST['position']);
     $maxvote = (int) $_POST['maxvote'];
     $q = $conn->query("SELECT COALESCE(MAX(priority), 0) + 1 AS next_priority FROM dept_position");
-    $priority = $q && $row = $q->fetch_assoc() ? $row['next_priority'] : 1;
+    // Safely compute next priority; handle empty table or query failure
+    $priority = 1;
+    if ($q && $q->num_rows > 0) {
+        $row = $q->fetch_assoc();
+        if ($row && isset($row['next_priority'])) {
+            $priority = (int)$row['next_priority'];
+        }
+    }
     $sql = "INSERT INTO dept_position (description, max_vote, acad_id, priority) VALUES ('$description', '$maxvote', '$acad', '$priority')";
     if ($conn->query($sql)) {
         $_SESSION['response'] = "Department position added.";

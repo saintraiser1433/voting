@@ -13,7 +13,7 @@ function verifyFaceId($id, $conn)
     $id = (int) $id;
     $mode = isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department' ? 'department' : 'general';
     if ($mode === 'department') {
-        $query = "SELECT 1 FROM dept_voters WHERE dv_id = '$id'";
+        $query = "SELECT 1 FROM voters WHERE v_id = '$id' AND department_id IS NOT NULL";
     } else {
         $query = "SELECT 1 FROM voters WHERE v_id = '$id'";
     }

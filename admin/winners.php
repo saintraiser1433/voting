@@ -76,25 +76,29 @@ $acads = $row ? $row['description'] : '';
                                             <div class="col-lg-8">
                                                 <div class="page-header-title">
                                                     <div class="d-inline">
-                                                        <h4>ELECTED OFFICERS FOR ACADEMIC YEAR : <?php echo $acads ?>
+                                                        <h4>OFFICERS / RESULTS FOR ACADEMIC YEAR : <?php echo $acads ?>
                                                         </h4>
-                                                        <span>This is the list of elected officers</span>
+                                                        <span>This shows officers and live results</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
                                                 <label>Academic Year:</label>
                                                 <select name="acads" class="form-control" id="acads" required>
-
                                                     <?php
-                                                    $sqlx = "SELECT * from acad_tbl";
+                                                    $sqlx = "SELECT * FROM acad_tbl ORDER BY description DESC";
                                                     $rsx = $conn->query($sqlx);
-                                                    if ($rsx) { foreach ($rsx as $row) {
-                                                        ?>
-                                                        <option value="<?php echo $row['acad_id'] ?>" selected>
-                                                            <?php echo $row['description'] ?>
-                                                        </option>
-                                                    <?php } } ?>
+                                                    if ($rsx) {
+                                                        while ($rowx = $rsx->fetch_assoc()) {
+                                                            $selAttr = ((int)$rowx['acad_id'] === (int)$acad) ? 'selected' : '';
+                                                            ?>
+                                                            <option value="<?php echo $rowx['acad_id']; ?>" <?php echo $selAttr; ?>>
+                                                                <?php echo htmlspecialchars($rowx['description']); ?>
+                                                            </option>
+                                                        <?php
+                                                        }
+                                                    }
+                                                    ?>
                                                 </select>
                                             </div>
 
@@ -146,13 +150,15 @@ $acads = $row ? $row['description'] : '';
 </style>
 
 <script>
-
-    function getData(id) {
+    function getDeptId() {
+        return new URL(window.location.href).searchParams.get('dept_id') || '';
+    }
+    function getData(id, deptId) {
+        var payload = { acad: id };
+        if (deptId) payload.dept_id = deptId;
         $.ajax({
             method: 'GET',
-            data: {
-                acad: id
-            },
+            data: payload,
             url: "ajax/fetchresult.php",
             success: function (datas) {
                 $('#resultx').html(datas);
@@ -160,12 +166,10 @@ $acads = $row ? $row['description'] : '';
         });
     }
 
-    getData('<?php echo $acad ?>')
+    getData('<?php echo $acad ?>', getDeptId());
     $('#acads').on('change', function () {
-        var data = $(this).val();
-        getData(data);
-
-    })
+        getData($(this).val(), getDeptId());
+    });
 
 
     setInterval(() => {

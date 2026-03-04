@@ -13,12 +13,12 @@ if (!isset($_SESSION['at'])) {
 $mode = isset($_GET['mode']) ? $_GET['mode'] : '';
 if ($mode === 'department') {
     $_SESSION['admin_mode'] = 'department';
+    $target = 'dept_voters.php';
 } else {
     $_SESSION['admin_mode'] = 'general';
+    $target = 'voters.php';
 }
 
-$redirect = isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], '/admin/') !== false
-    ? $_SERVER['HTTP_REFERER']
-    : 'dashboard.php';
-header('Location: ' . $redirect);
+// After switching mode, direct to the appropriate voters page.
+header('Location: ' . $target);
 exit;

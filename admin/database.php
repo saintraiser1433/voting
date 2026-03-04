@@ -10,9 +10,9 @@ if (isset($_POST["import"])) {
         $extension = end($array);
         if ($extension == 'sql') {
             $query_disable_checks = 'SET foreign_key_checks = 0';
-            $connect = mysqli_connect("localhost", "root", "", "myvote");
+            $connect = mysqli_connect("localhost", "root", "", "votes");
             $connect->query('SET foreign_key_checks = 0');
-            $qry_drop = "DROP TABLE IF EXISTS acad_tbl,admin,candidate,election_title,partylist,position,vote,voters,archives,archivesvote";
+            $qry_drop = "DROP TABLE IF EXISTS acad_tbl,admin,candidate,courses,departments,department_vote,dept_candidate,dept_position,dept_voters,election_title,partylist,position,vote,voters";
             $connect->query($qry_drop);
             $connect->query('SET foreign_key_checks = 1');
 

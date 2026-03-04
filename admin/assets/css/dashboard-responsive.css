@@ -1,0 +1,183 @@
+/**
+ * Dashboard (general + department) – structured, responsive layout for officers/results and cards.
+ */
+
+/* Constrain content and add consistent spacing */
+.dashboard-page .page-body {
+    padding: 1rem 0.75rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dashboard-page .page-body > .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.dashboard-page .page-body > .row > [class*="col-"],
+.dashboard-page .page-body > .row > .dashboard-officers-wrap,
+.dashboard-page .page-body > .row > .election-running-time {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Officers/results section: header + cards in one column */
+.dashboard-page .dashboard-officers-wrap {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.dashboard-page .page-header {
+    margin-bottom: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dashboard-page .page-header .page-header-title h4 {
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+}
+
+.dashboard-page .page-header .page-header-title span {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Cards grid: responsive and aligned */
+.dashboard-page .row.users-card {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    gap: 0;
+}
+
+.dashboard-page .row.users-card > [class*="col-"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-bottom: 1rem;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 576px) {
+    .dashboard-page .row.users-card > .col-md-6,
+    .dashboard-page .row.users-card > [class*="col-lg-6"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-page .row.users-card > .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (min-width: 992px) {
+    .dashboard-page .row.users-card > .col-lg-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .dashboard-page .row.users-card > .col-xl-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+/* Uniform officer/result cards */
+.dashboard-page .user-card {
+    height: 100%;
+    margin-bottom: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: box-shadow 0.2s ease;
+}
+
+.dashboard-page .user-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dashboard-page .user-card .card-block {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.dashboard-page .user-card .img-hover {
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+.dashboard-page .user-card .img-hover img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: block;
+    border: 2px solid #e9ecef;
+}
+
+.dashboard-page .user-card .user-content {
+    width: 100%;
+}
+
+.dashboard-page .user-card .user-content h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+    word-break: break-word;
+}
+
+.dashboard-page .user-card .user-content p {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+}
+
+/* Department dropdown row */
+.dashboard-page .row.m-b-20 {
+    margin-bottom: 1rem;
+}
+
+.dashboard-page .row.m-b-20 .col-md-4 {
+    max-width: 280px;
+}
+
+/* Running time card */
+.dashboard-page .election-running-time {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* Open state: YEAR LEVEL RESULTS card full width */
+.dashboard-page .col-xl-12.col-md-12 .card {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 767px) {
+    .dashboard-page .page-body {
+        padding: 0.5rem 0.5rem;
+    }
+    .dashboard-page .page-header .page-header-title h4 {
+        font-size: 1.1rem;
+    }
+    .dashboard-page .user-card .img-hover img {
+        width: 64px;
+        height: 64px;
+    }
+    .dashboard-page .user-card .user-content h4 {
+        font-size: 0.9rem;
+    }
+}

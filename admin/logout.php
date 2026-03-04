@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 session_destroy();
 // include 'autobackupdatabase.php';
 header("Location:index.php");

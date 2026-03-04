@@ -13,6 +13,13 @@ $acad = $_SESSION['acad'];
 if (isset($_POST['submit'])) {
     $stud = $_POST['studid'];
     $pos = $_POST['position'];
+    // Prevent same student from being a department candidate in the same academic year
+    $stud_esc = $conn->real_escape_string($stud);
+    $checkDept = $conn->query("SELECT 1 FROM dept_candidate WHERE acad_id='$acad' AND stud_id='$stud_esc' LIMIT 1");
+    if ($checkDept && $checkDept->num_rows > 0) {
+        $_SESSION['response'] = "This student is already a department candidate and cannot be added to general candidates.";
+        $_SESSION['type'] = "warning";
+    } else {
     if ($_FILES['files']['name'] == '') {
         $dirs = "libraries/img/glanlogo.png";
     } else {
@@ -36,6 +43,7 @@ if (isset($_POST['submit'])) {
     } else {
         $_SESSION['response'] = "An error has occurred";
         $_SESSION['type'] = "warning";
+    }
     }
 }
 if (isset($_POST['update'])) {

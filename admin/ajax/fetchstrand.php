@@ -5,12 +5,13 @@ if (isset($_POST['id'])) {
     $myg = $_POST['id'];
     $acad = $_SESSION['acad'];
     
-    // Always show both Course and Section fields for all year levels
+    // Always show both Course and Section fields for all year levels, in a compact row
     echo '
-        <div class="form-group mr-2">
-            <label class="col-form-label">Course</label>
-            <select name="strand" class="form-control" id="strand" required>
-                <option value=""></option>';
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-2">
+                <label class="col-form-label">Course</label>
+                <select name="strand" class="form-control" id="strand" required>
+                    <option value=""></option>';
     
     // Fetch courses from database
     $sql = "SELECT * FROM courses WHERE acad_id='$acad' AND status=1 ORDER BY course_code ASC";
@@ -23,12 +24,12 @@ if (isset($_POST['id'])) {
     }
     
     echo '
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="col-form-label">Section</label>
-            <select name="section" class="form-control" id="section" required>
-                <option value=""></option>
+                </select>
+            </div>
+            <div class="form-group col-md-6 mb-2">
+                <label class="col-form-label">Section</label>
+                <select name="section" class="form-control" id="section" required>
+                    <option value=""></option>
                 <option value="A">A</option>
                 <option value="B">B</option>
                 <option value="C">C</option>
@@ -55,7 +56,8 @@ if (isset($_POST['id'])) {
                 <option value="X">X</option>
                 <option value="Y">Y</option>
                 <option value="Z">Z</option>
-            </select>
+                </select>
+            </div>
         </div>
     ';
 }

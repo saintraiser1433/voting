@@ -10,8 +10,13 @@ if (isset($_POST['submits'])) {
     $maxvote = $_POST['maxvote'];
     $sql = "SELECT * FROM position ORDER BY priority DESC LIMIT 1";
     $query = $conn->query($sql);
-    $row = $query->fetch_assoc();
-    $priority = $row['priority'] + 1;
+    // Safely compute next priority even when there are no rows yet
+    if ($query && $query->num_rows > 0) {
+        $row = $query->fetch_assoc();
+        $priority = ((int)$row['priority']) + 1;
+    } else {
+        $priority = 1;
+    }
     $sql = "INSERT INTO position (description, max_vote,acad_id, priority) VALUES ('$description', '$maxvote', '$acad','$priority')";
     if ($conn->query($sql)) {
         $_SESSION['response'] = "Position successfully added";

@@ -1,0 +1,147 @@
+/* Responsive ballot layout – general and department */
+.ballot-page .page-body {
+    padding: 0.5rem 0 1rem;
+}
+.ballot-page .card {
+    margin-bottom: 0.75rem;
+}
+.ballot-page .card-block {
+    padding: 0.5rem 0.75rem;
+}
+.ballot-page .card-block-big {
+    padding: 0.75rem 0.75rem;
+}
+.ballot-page .card.bg-c-green .card-block,
+.ballot-page .card.bg-c-blue .card-block {
+    padding: 0.5rem 0.75rem;
+}
+.ballot-page .ballot-title-card .card-block {
+    padding: 0.5rem;
+}
+.ballot-page .ballot-title-card h5 {
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+.ballot-page .ballot-title-card h5 img {
+    width: 40px;
+    height: 40px;
+}
+.ballot-page .ballot-title-card span {
+    font-size: 0.8rem;
+}
+.ballot-page .candidate-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.ballot-page .candidate-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.ballot-page .candidate-row .radio-inline,
+.ballot-page .candidate-row .checkbox-fade {
+    margin: 0 0.5rem 0 0;
+    flex-shrink: 0;
+}
+.ballot-page .candidate-row ul {
+    list-style: none;
+    margin: 0 0.75rem 0 0;
+    padding: 0;
+    flex-shrink: 0;
+}
+.ballot-page .candidate-row ul li img {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #4680ff;
+    border-radius: 8px;
+    object-fit: cover;
+}
+.ballot-page .candidate-row .candidate-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.95rem;
+    margin: 0;
+}
+.ballot-page .ballot-actions {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.ballot-page .ballot-actions .btn {
+    margin: 0 0.25rem 0.25rem 0;
+}
+.ballot-page .ballot-no-candidates {
+    color: #fff;
+    background: #6c757d;
+    border-radius: 4px;
+}
+#preview1 .modal-body .card {
+    padding: 0.5rem;
+}
+#preview2 .votelist {
+    margin-bottom: 0.35rem;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+}
+@media (max-width: 576px) {
+    .ballot-page .page-body {
+        padding: 0.25rem 0 0.75rem;
+    }
+    .ballot-page .col-xl-8.col-md-12 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    .ballot-page .card-block,
+    .ballot-page .card-block-big {
+        padding: 0.5rem;
+    }
+    .ballot-page .ballot-title-card h5 {
+        font-size: 0.9rem;
+    }
+    .ballot-page .ballot-title-card h5 img {
+        width: 32px;
+        height: 32px;
+    }
+    .ballot-page .card.bg-c-blue h3 {
+        font-size: 1rem;
+    }
+    .ballot-page .candidate-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.5rem 0;
+    }
+    .ballot-page .candidate-row .radio-inline,
+    .ballot-page .candidate-row .checkbox-fade {
+        margin: 0 0 0.25rem 0;
+    }
+    .ballot-page .candidate-row ul {
+        margin: 0.25rem 0;
+    }
+    .ballot-page .candidate-row ul li img {
+        width: 80px;
+        height: 80px;
+    }
+    .ballot-page .candidate-row .candidate-name,
+    .ballot-page .candidate-row h3 {
+        font-size: 0.85rem;
+        margin-left: 0;
+    }
+    .ballot-page .ballot-actions {
+        flex-direction: column;
+        margin-top: 0.5rem;
+    }
+    .ballot-page .ballot-actions .btn {
+        width: 100%;
+        margin: 0 0 0.25rem 0;
+    }
+    #preview1 .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+}
