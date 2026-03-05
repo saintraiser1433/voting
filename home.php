@@ -76,6 +76,8 @@ $acads = $row ? $row['description'] : '';
                         <div class="page-wrapper">
 
                             <div class="page-body">
+                                <!-- Offline sync button (always visible; only active when there is a pending offline vote) -->
+                             
                                 <?php
                                 $sqlt = "SELECT * FROM election_title WHERE acad_id = '$acad' AND is_finished = 0 AND (election_type = 'general' OR election_type IS NULL)";
                                 $rs = $conn->query($sqlt);
@@ -146,7 +148,11 @@ $acads = $row ? $row['description'] : '';
                                                                 echo '  <span class="text-center font-weight-bold">You have already voted for this election.</span><br><br>';
                                                                 echo '  <a href="my_ballot.php?type=general" class="btn btn-outline-primary btn-sm mr-1"><i class="fa fa-file-text-o"></i> View My Ballot</a>';
                                                                 echo '  <a href="my_ballot.php?type=general" class="btn btn-outline-secondary btn-sm" target="_blank"><i class="fa fa-print"></i> Print Ballot</a>';
+                                                               
                                                                 echo ' <a href="switch_voting_mode.php?mode=department" class="btn btn-outline-primary btn-sm ml-2">Department Voting</a>';
+                                                                echo ' <button type="button" class="btn btn-warning btn-sm" id="btn-sync-offline-dept">
+                                        <i class="fa fa-cloud-upload"></i> Sync Offline Vote
+                                    </button>';
                                                             } else {
                                                                 echo '  <span class="text-center font-weight-bold">Please click "Start Button" to begin vote!</span><br><br>
                                                             <a href="ballot.php" class="btn btn-success"><i class="fa fa-arrow-right"></i> Start!</a> ';
@@ -398,6 +404,27 @@ $acads = $row ? $row['description'] : '';
     <?php include 'nav/script.php'; ?>
 
     <?php
+    // Load sync URL for offline voting
+    $syncUrl = '';
+    $resSync = $conn->query("SHOW TABLES LIKE 'app_settings'");
+    if ($resSync && $resSync->num_rows > 0) {
+        $cfgRes = $conn->query("SELECT setting_value FROM app_settings WHERE setting_key='ngrok_sync_url' LIMIT 1");
+        if ($cfgRes && $cfgRes->num_rows > 0) {
+            $cfgRow = $cfgRes->fetch_assoc();
+            $syncUrl = trim($cfgRow['setting_value']);
+        }
+    }
+    ?>
+    <script>
+        window.__voterId = <?php echo json_encode($voter); ?>;
+        window.__acadId = <?php echo json_encode($acad); ?>;
+        window.__deptId = 0;
+        window.__mode = 'general';
+        window.__syncUrl = <?php echo json_encode($syncUrl); ?>;
+    </script>
+    <script src="js/offline-vote.js"></script>
+
+    <?php
     $flashMsg = '';
     $flashType = 'success';
     if (isset($_SESSION['response']) && $_SESSION['response'] != "") {
@@ -417,7 +444,51 @@ $acads = $row ? $row['description'] : '';
                 if (flashMsg) {
                     swal({ title: flashMsg, icon: flashType, button: "OK" });
                 }
+
+                // After loader, check for pending offline GENERAL vote only
+                try {
+                    var pending = localStorage.getItem('pending_vote');
+                    if (pending && typeof window.syncVote === 'function') {
+                        var payload = null;
+                        try { payload = JSON.parse(pending); } catch (e) { payload = null; }
+                        if (!payload || payload.mode !== 'general') {
+                            return;
+                        }
+                        swal({
+                            title: 'Offline vote detected',
+                            text: 'You have an unsynced vote on this device. Do you want to sync it now?',
+                            icon: 'info',
+                            buttons: {
+                                cancel: 'Later',
+                                confirm: {
+                                    text: 'Sync Now',
+                                    value: true
+                                }
+                            }
+                        }).then(function (ok) {
+                            if (ok) {
+                                window.syncVote();
+                            }
+                        });
+                    }
+                } catch (e) { }
             });
+        $('#btn-sync-offline-general').on('click', function () {
+            try {
+                var pending = localStorage.getItem('pending_vote');
+                var payload = pending ? JSON.parse(pending) : null;
+                if (!payload || payload.mode !== 'general') {
+                    swal({ title: 'No offline general vote to sync', icon: 'info', button: 'OK' });
+                    return;
+                }
+            } catch (e) {
+                swal({ title: 'No offline general vote to sync', icon: 'info', button: 'OK' });
+                return;
+            }
+            if (typeof window.syncVote === 'function') {
+                window.syncVote();
+            }
+        });
             $(document).on('click', '.plat', function (e) {
                 $('#platform1').modal('show');
                 var id = $(this).data('id');

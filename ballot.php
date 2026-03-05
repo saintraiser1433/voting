@@ -2,6 +2,7 @@
 include 'connection.php';
 
 $acad = $_SESSION['acad'];
+$voterId = isset($_SESSION['v_id']) ? (int)$_SESSION['v_id'] : 0;
 if (!isset($_SESSION['v_id']) && !isset($_SESSION['faceverified'])) {
     header("Location: logout.php");
     exit;
@@ -32,6 +33,9 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
 
             <?php include 'nav/topbar.php'; ?>
 
+            <div id="offline-banner" class="alert alert-warning text-center m-0" style="display:none;">
+                You are currently offline. Your vote will be stored on this device and synced when you go online.
+            </div>
             <div class="pcoded-main-container">
                 <div class="pcoded-wrapper">
 
@@ -125,6 +129,26 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
 
     <?php include 'nav/script.php'; ?>
     <?php include 'modalplatform.php'; ?>
+    <?php
+    // Load sync URL from app_settings if available
+    $syncUrl = '';
+    $resSync = $conn->query("SHOW TABLES LIKE 'app_settings'");
+    if ($resSync && $resSync->num_rows > 0) {
+        $cfgRes = $conn->query("SELECT setting_value FROM app_settings WHERE setting_key='ngrok_sync_url' LIMIT 1");
+        if ($cfgRes && $cfgRes->num_rows > 0) {
+            $cfgRow = $cfgRes->fetch_assoc();
+            $syncUrl = trim($cfgRow['setting_value']);
+        }
+    }
+    ?>
+    <script>
+        window.__voterId = <?php echo json_encode($voterId); ?>;
+        window.__acadId = <?php echo json_encode($acad); ?>;
+        window.__deptId = 0;
+        window.__mode = 'general';
+        window.__syncUrl = <?php echo json_encode($syncUrl); ?>;
+    </script>
+    <script src="js/offline-vote.js"></script>
     <?php
     if (isset($_SESSION['response']) && $_SESSION['response'] != "") {
 

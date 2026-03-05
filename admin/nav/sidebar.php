@@ -115,8 +115,12 @@
                     <span class="pcoded-mtext">Archives</span>
                 </a>
             </li>
-
-
+            <li class="">
+                <a href="app_config.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/settings.png"></span>
+                    <span class="pcoded-mtext">App Config</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
