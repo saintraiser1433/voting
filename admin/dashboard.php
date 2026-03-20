@@ -483,7 +483,13 @@ $acads = $row ? $row['description'] : '';
                         dataType: 'json',
                         success: function (r) {
                             if (r.success) {
-                                swal({ title: r.message, icon: 'success' }).then(function () { location.reload(); });
+                                var reloadWithModal = function () {
+                                    var url = new URL(window.location.href);
+                                    url.searchParams.set('reopen_modal', '1');
+                                    url.searchParams.set('reopen_message', encodeURIComponent(r.message || 'Election reopened. Voting is now open.'));
+                                    location.href = url.toString();
+                                };
+                                reloadWithModal();
                             } else {
                                 swal({ title: r.message || 'Error', icon: 'error' });
                                 btn.prop('disabled', false).text('Reopen election (voting ongoing)');
@@ -495,6 +501,80 @@ $acads = $row ? $row['description'] : '';
                         }
                     });
                 });
+
+                // If reopen was triggered, open Election Settings modal and highlight end date
+                try {
+                    var params = new URLSearchParams(window.location.search);
+                    if (params.get('reopen_modal') === '1') {
+                        var reopenMsg = decodeURIComponent(params.get('reopen_message') || 'Election reopened. Voting is now open.');
+                        // Remove the reopen flag from the URL so refresh won't trigger the modal again
+                        params.delete('reopen_modal');
+                        params.delete('reopen_message');
+                        var cleanUrl = window.location.pathname + (params.toString() ? ('?' + params.toString()) : '') + window.location.hash;
+                        window.history.replaceState({}, '', cleanUrl);
+                        setTimeout(function () {
+                            if ($('#mytitleq').length) {
+                                $('#mytitleq').modal('show');
+                            }
+                            var endInput = $('#mytitleq input[name="date_end"]');
+                            if (endInput && endInput.length) {
+                                // Set to "now + 1 hour" if empty or already in the past
+                                function pad2(n) { return String(n).padStart(2, '0'); }
+                                function toLocalDatetimeValue(d) {
+                                    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+                                }
+                                function parseLocalDatetimeValue(v) {
+                                    if (!v) return null;
+                                    var parts = v.split(/[-T:]/);
+                                    if (parts.length < 5) return null;
+                                    var y = parseInt(parts[0], 10);
+                                    var m = parseInt(parts[1], 10) - 1;
+                                    var day = parseInt(parts[2], 10);
+                                    var h = parseInt(parts[3], 10);
+                                    var mi = parseInt(parts[4], 10);
+                                    return new Date(y, m, day, h, mi, 0, 0);
+                                }
+
+                                var currentVal = endInput.val();
+                                var endDate = parseLocalDatetimeValue(currentVal);
+                                var now = new Date();
+                                var target = new Date(now.getTime() + (60 * 60 * 1000)); // +1 hour
+                                if (!endDate || endDate.getTime() <= now.getTime()) {
+                                    endInput.val(toLocalDatetimeValue(target));
+                                }
+
+                                // Highlight + show success notice only after modal is visible
+                                var noticeShown = false;
+                                var highlight = function () {
+                                    endInput.css({
+                                        border: '2px solid #dc3545',
+                                        boxShadow: '0 0 0 0.2rem rgba(220,53,69,.25)'
+                                    });
+                                    endInput[0].focus();
+                                };
+
+                                var showNoticeOnce = function () {
+                                    if (noticeShown) return;
+                                    noticeShown = true;
+                                    swal({ title: reopenMsg, icon: 'success', button: 'OK' });
+                                };
+
+                                $('#mytitleq')
+                                    .off('shown.bs.modal.reopenNotice')
+                                    .on('shown.bs.modal.reopenNotice', function () {
+                                        highlight();
+                                        showNoticeOnce();
+                                    });
+
+                                // Fallback highlight (and notice) if shown event doesn't fire
+                                setTimeout(function () {
+                                    highlight();
+                                    showNoticeOnce();
+                                }, 250);
+                            }
+                        }, 800);
+                    }
+                } catch (e) { }
             });
 
 

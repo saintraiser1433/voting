@@ -4,6 +4,46 @@
     var pingIntervalMs = 10000;
     var syncUrl = (window.__syncUrl || '').replace(/\/+$/, ''); // trim trailing slash
 
+    function ensureSyncOverlay() {
+        var existing = document.getElementById('sync-overlay-offline');
+        if (existing) return existing;
+
+        var overlay = document.createElement('div');
+        overlay.id = 'sync-overlay-offline';
+        overlay.style.position = 'fixed';
+        overlay.style.left = '0';
+        overlay.style.top = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.background = 'rgba(0,0,0,0.45)';
+        overlay.style.zIndex = '999999';
+        overlay.style.display = 'none';
+
+        overlay.innerHTML =
+            '<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);' +
+            'background:#fff;border-radius:8px;padding:18px 22px;' +
+            'box-shadow:0 10px 30px rgba(0,0,0,0.25);text-align:center;min-width:260px;">' +
+            '<div style="font-weight:700;margin-bottom:10px;">Syncing offline vote...</div>' +
+            '<div style="display:flex;justify-content:center;">' +
+            '<div class="spinner" style="width:22px;height:22px;border:3px solid #ccc;border-top-color:#28a745;border-radius:50%;animation:spin 0.8s linear infinite;"></div>' +
+            '</div>' +
+            '</div>' +
+            '<style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
+
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function showSyncLoading() {
+        var overlay = ensureSyncOverlay();
+        overlay.style.display = 'block';
+    }
+
+    function hideSyncLoading() {
+        var overlay = ensureSyncOverlay();
+        overlay.style.display = 'none';
+    }
+
     function hasPending() {
         try {
             return !!localStorage.getItem(STORAGE_KEY);
@@ -36,8 +76,28 @@
         if (el) el.style.display = 'none';
     }
 
+    function getPendingPayload() {
+        var raw = null;
+        try {
+            raw = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
+            return null;
+        }
+        if (!raw) return null;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            return null;
+        }
+    }
+
     function showSyncPrompt() {
         if (typeof swal === 'function' && hasPending()) {
+            var pendingPayload = getPendingPayload();
+            var currentMode = window.__mode || 'general';
+            if (!pendingPayload || pendingPayload.mode !== currentMode) {
+                return; // don't prompt for the wrong mode
+            }
             swal({
                 title: 'Offline vote stored',
                 text: 'You have an unsynced vote. Do you want to sync it now?',
@@ -88,14 +148,21 @@
             return;
         }
 
-        var raw = localStorage.getItem(STORAGE_KEY);
-        var payload;
-        try {
-            payload = JSON.parse(raw);
-        } catch (e) {
+        var payload = getPendingPayload();
+        if (!payload) {
             clearPending();
             return;
         }
+
+        // Enforce mode safety (prevents syncing wrong pending vote)
+        var currentMode = window.__mode || 'general';
+        if (payload.mode !== currentMode) {
+            swal && swal({ title: 'Wrong mode', text: 'You can only sync the offline vote for this page mode.', icon: 'warning', button: 'OK' });
+            return;
+        }
+
+        // Loading overlay while network sync is running
+        showSyncLoading();
 
         fetch(syncUrl + '/ajax/sync_offline_vote.php', {
             method: 'POST',
@@ -104,6 +171,7 @@
         })
             .then(function (res) { return res.json(); })
             .then(function (resp) {
+                hideSyncLoading();
                 if (resp.status === 'ok') {
                     clearPending();
                     swal && swal({ title: 'Vote synced successfully', icon: 'success', button: 'OK' });
@@ -116,6 +184,7 @@
                 }
             })
             .catch(function () {
+                hideSyncLoading();
                 swal && swal({ title: 'Sync failed', text: 'Please try again later.', icon: 'error', button: 'OK' });
             });
     };

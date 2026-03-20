@@ -76,8 +76,25 @@ $acads = $row ? $row['description'] : '';
                         <div class="page-wrapper">
 
                             <div class="page-body">
-                                <!-- Offline sync button (always visible; only active when there is a pending offline vote) -->
-                             
+                                <!-- Offline sync button (always visible; sync only pending GENERAL mode) -->
+                                <div class="mb-3" id="offline-sync-container">
+                                    <button type="button" class="btn btn-warning btn-sm" id="btn-sync-offline-general">
+                                        <i class="fa fa-cloud-upload"></i> Sync Offline Vote
+                                    </button>
+                                </div>
+                                <script>
+                                    (function () {
+                                        try {
+                                            var host = window.location.hostname || '';
+                                            var isLocal = (host === 'localhost' || host === '127.0.0.1' || host === '::1');
+                                            if (!isLocal) {
+                                                var el = document.getElementById('offline-sync-container');
+                                                if (el) el.style.display = 'none';
+                                            }
+                                        } catch (e) { }
+                                    })();
+                                </script>
+
                                 <?php
                                 $sqlt = "SELECT * FROM election_title WHERE acad_id = '$acad' AND is_finished = 0 AND (election_type = 'general' OR election_type IS NULL)";
                                 $rs = $conn->query($sqlt);
@@ -150,9 +167,6 @@ $acads = $row ? $row['description'] : '';
                                                                 echo '  <a href="my_ballot.php?type=general" class="btn btn-outline-secondary btn-sm" target="_blank"><i class="fa fa-print"></i> Print Ballot</a>';
                                                                
                                                                 echo ' <a href="switch_voting_mode.php?mode=department" class="btn btn-outline-primary btn-sm ml-2">Department Voting</a>';
-                                                                echo ' <button type="button" class="btn btn-warning btn-sm" id="btn-sync-offline-dept">
-                                        <i class="fa fa-cloud-upload"></i> Sync Offline Vote
-                                    </button>';
                                                             } else {
                                                                 echo '  <span class="text-center font-weight-bold">Please click "Start Button" to begin vote!</span><br><br>
                                                             <a href="ballot.php" class="btn btn-success"><i class="fa fa-arrow-right"></i> Start!</a> ';
