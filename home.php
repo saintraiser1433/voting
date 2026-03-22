@@ -82,18 +82,6 @@ $acads = $row ? $row['description'] : '';
                                         <i class="fa fa-cloud-upload"></i> Sync Offline Vote
                                     </button>
                                 </div>
-                                <script>
-                                    (function () {
-                                        try {
-                                            var host = window.location.hostname || '';
-                                            var isLocal = (host === 'localhost' || host === '127.0.0.1' || host === '::1');
-                                            if (!isLocal) {
-                                                var el = document.getElementById('offline-sync-container');
-                                                if (el) el.style.display = 'none';
-                                            }
-                                        } catch (e) { }
-                                    })();
-                                </script>
 
                                 <?php
                                 $sqlt = "SELECT * FROM election_title WHERE acad_id = '$acad' AND is_finished = 0 AND (election_type = 'general' OR election_type IS NULL)";
@@ -492,9 +480,11 @@ $acads = $row ? $row['description'] : '';
                 var pending = localStorage.getItem('pending_vote');
                 var payload = pending ? JSON.parse(pending) : null;
                 if (!payload) {
+                    var origin = '';
+                    try { origin = window.location.origin || ''; } catch (e2) { }
                     swal({
                         title: 'No offline general vote to sync',
-                        text: 'Nothing is stored on this device. After you confirm Submit, your vote is saved here only if you are offline or the voting server cannot be reached from this browser.',
+                        text: 'Nothing is saved in this browser for this site (' + origin + '). If Submit reached the server, your vote is already recorded and nothing is stored here—that is normal. Pending votes are kept only per site address: use the exact same link (e.g. same Wi‑Fi IP or ngrok URL) to vote and to sync. On the ballot you can use "Save on device (sync later)" to force a local copy.',
                         icon: 'info',
                         button: 'OK'
                     });

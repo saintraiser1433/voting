@@ -119,6 +119,9 @@ if (!$chk && strpos($conn->error ?? '', 'Unknown column') !== false) {
                                     <input type="hidden" name="voters1">
                                     <div class="ballot-actions text-center">
                                         <button type="button" class="btn btn-success btn-flat" id="preview"><i class="fa fa-file-text"></i> Preview</button>
+                                        <button type="button" class="btn btn-warning btn-flat" id="btn-save-offline" title="Use if the connection is bad or you will sync from another network">
+                                            <i class="fa fa-mobile"></i> Save on device (sync later)
+                                        </button>
                                         <button type="submit" class="btn btn-primary btn-flat" name="vote" id="btn-submit"><i class="fa fa-check-square-o"></i> Submit</button>
                                     </div>
                                 </form>
@@ -183,6 +186,20 @@ $('#preview').click(function (e) {
     if (!form) { $('#buts').click(); return; }
     $.ajax({ type: 'POST', url: 'ajax/preview_dept.php', data: form, dataType: 'json',
         success: function (response) { $('#preview1').modal('show'); $('#preview2').html(response.list || ''); }
+    });
+});
+$('#btn-save-offline').on('click', function () {
+    var bf = document.getElementById('ballotForm');
+    if (!bf) return;
+    swal({
+        title: 'Save on this device?',
+        text: 'Your choices will be stored in this browser only (' + (window.location.origin || '') + '). Use "Sync Offline Vote" on the department home when the server is reachable through your sync URL.',
+        icon: 'info',
+        buttons: true
+    }).then(function (ok) {
+        if (ok && typeof window.persistBallotOffline === 'function') {
+            window.persistBallotOffline(bf);
+        }
     });
 });
 </script>

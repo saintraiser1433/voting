@@ -137,6 +137,17 @@
         return votes;
     }
 
+    function formHasVoteSelections(form) {
+        var votes = collectVotesFromForm(form);
+        return Object.keys(votes).some(function (k) {
+            if (k === 'voters1') return false;
+            var v = votes[k];
+            if (v == null || v === '') return false;
+            if (Array.isArray(v)) return v.length > 0;
+            return true;
+        });
+    }
+
     function buildPayloadFromForm(form) {
         if (!form) return null;
         return {
@@ -155,6 +166,15 @@
      */
     window.persistBallotOffline = function (form) {
         if (!form) return false;
+        if (!formHasVoteSelections(form)) {
+            swal && swal({
+                title: 'No choices selected',
+                text: 'Select at least one candidate, then save or submit again.',
+                icon: 'warning',
+                button: 'OK'
+            });
+            return false;
+        }
         var payload = buildPayloadFromForm(form);
         savePending(payload);
         if (!hasPending()) {
@@ -207,7 +227,17 @@
             } catch (x) { }
         }, 6000);
 
-        fetch('ajax/check_ping.php?_=' + Date.now(), {
+        var pingUrl = (function () {
+            try {
+                var u = new URL('ajax/check_ping.php', window.location.href);
+                u.searchParams.set('_', String(Date.now()));
+                return u.toString();
+            } catch (e) {
+                return 'ajax/check_ping.php?_=' + Date.now();
+            }
+        })();
+
+        fetch(pingUrl, {
             method: 'GET',
             cache: 'no-store',
             credentials: 'same-origin',

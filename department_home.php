@@ -47,18 +47,6 @@ $acads = $row ? $row['description'] : '';
                                         <i class="fa fa-cloud-upload"></i> Sync Offline Vote
                                     </button>
                                 </div>
-                                <script>
-                                    (function () {
-                                        try {
-                                            var host = window.location.hostname || '';
-                                            var isLocal = (host === 'localhost' || host === '127.0.0.1' || host === '::1');
-                                            if (!isLocal) {
-                                                var el = document.getElementById('offline-sync-container');
-                                                if (el) el.style.display = 'none';
-                                            }
-                                        } catch (e) { }
-                                    })();
-                                </script>
 
                                 <?php
                                 // Department election: must have a row with election_type='department' and is_finished=0
@@ -287,9 +275,11 @@ $acads = $row ? $row['description'] : '';
                     var pending = localStorage.getItem('pending_vote');
                     var payload = pending ? JSON.parse(pending) : null;
                     if (!payload) {
+                        var origin = '';
+                        try { origin = window.location.origin || ''; } catch (e2) { }
                         swal({
                             title: 'No offline department vote to sync',
-                            text: 'Nothing is stored on this device. After you confirm Submit, your vote is saved here only if you are offline or the voting server cannot be reached from this browser.',
+                            text: 'Nothing is saved in this browser for this site (' + origin + '). If Submit reached the server, your vote is already recorded. Pending votes are kept only per site address: use the exact same link to vote and to sync. On the ballot you can use "Save on device (sync later)" to force a local copy.',
                             icon: 'info',
                             button: 'OK'
                         });
@@ -357,9 +347,11 @@ $acads = $row ? $row['description'] : '';
                     var pending = localStorage.getItem('pending_vote');
                     var payload = pending ? JSON.parse(pending) : null;
                     if (!payload) {
+                        var origin = '';
+                        try { origin = window.location.origin || ''; } catch (e2) { }
                         swal({
                             title: 'No offline department vote to sync',
-                            text: 'Nothing is stored on this device. After you confirm Submit, your vote is saved here only if you are offline or the voting server cannot be reached from this browser.',
+                            text: 'Nothing is saved in this browser for this site (' + origin + '). If Submit reached the server, your vote is already recorded. Pending votes are kept only per site address: use the exact same link to vote and to sync. On the ballot you can use "Save on device (sync later)" to force a local copy.',
                             icon: 'info',
                             button: 'OK'
                         });

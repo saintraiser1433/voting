@@ -111,6 +111,9 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
                                     <input type="hidden" name="voters1">
                                     <div class="ballot-actions text-center">
                                         <button type="button" class="btn btn-success btn-flat" id="preview"><i class="fa fa-file-text"></i> Preview</button>
+                                        <button type="button" class="btn btn-warning btn-flat" id="btn-save-offline" title="Use if the connection is bad or you will sync from another network">
+                                            <i class="fa fa-mobile"></i> Save on device (sync later)
+                                        </button>
                                         <button type="submit" class="btn btn-primary btn-flat" name="vote" id="btn-submit"><i class="fa fa-check-square-o"></i> Submit</button>
                                     </div>
                                 </form>
@@ -221,5 +224,20 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
             });
         }
 
+    });
+
+    $('#btn-save-offline').on('click', function () {
+        var bf = document.getElementById('ballotForm');
+        if (!bf) return;
+        swal({
+            title: 'Save on this device?',
+            text: 'Your choices will be stored in this browser only (' + (window.location.origin || '') + '). Use "Sync Offline Vote" on the home page when the server is reachable through your sync URL. If the server already recorded your vote, do not sync again.',
+            icon: 'info',
+            buttons: true
+        }).then(function (ok) {
+            if (ok && typeof window.persistBallotOffline === 'function') {
+                window.persistBallotOffline(bf);
+            }
+        });
     });
 </script>
