@@ -185,8 +185,15 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    $('#ballotForm').submit();
-
+                    // Use native requestSubmit so offline-vote.js addEventListener('submit') runs.
+                    // jQuery .submit() may not fire native submit listeners, so offline votes were never stored.
+                    var bf = document.getElementById('ballotForm');
+                    var sub = document.getElementById('btn-submit');
+                    if (bf && typeof bf.requestSubmit === 'function') {
+                        bf.requestSubmit(sub || undefined);
+                    } else {
+                        $('#ballotForm').submit();
+                    }
                 } else {
                     swal("Cancelled", "", "error");
                 }

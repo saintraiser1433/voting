@@ -160,7 +160,19 @@ if (!$chk && strpos($conn->error ?? '', 'Unknown column') !== false) {
 $('#btn-submit').on('click', function (e) {
     e.preventDefault();
     swal({ title: "Are you sure?", text: "Once you click OK, your vote will be cast!", icon: "info", buttons: true })
-        .then(function(willDelete) { if (willDelete) $('#ballotForm').submit(); else swal("Cancelled", "", "error"); });
+        .then(function (willDelete) {
+            if (!willDelete) {
+                swal("Cancelled", "", "error");
+                return;
+            }
+            var bf = document.getElementById('ballotForm');
+            var sub = document.getElementById('btn-submit');
+            if (bf && typeof bf.requestSubmit === 'function') {
+                bf.requestSubmit(sub || undefined);
+            } else {
+                $('#ballotForm').submit();
+            }
+        });
 });
 if (window.history.replaceState) window.history.replaceState(null, null, window.location.href);
 $('#preview').click(function (e) {

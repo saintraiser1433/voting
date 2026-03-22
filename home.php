@@ -491,7 +491,25 @@ $acads = $row ? $row['description'] : '';
             try {
                 var pending = localStorage.getItem('pending_vote');
                 var payload = pending ? JSON.parse(pending) : null;
-                if (!payload || payload.mode !== 'general') {
+                if (!payload) {
+                    swal({
+                        title: 'No offline general vote to sync',
+                        text: 'Nothing is stored on this device. A vote is saved only after you confirm Submit on the ballot while the browser reports you are offline.',
+                        icon: 'info',
+                        button: 'OK'
+                    });
+                    return;
+                }
+                if (payload.mode === 'department') {
+                    swal({
+                        title: 'Wrong voting mode',
+                        text: 'You have a pending department ballot on this device. Open Department Voting and use Sync Offline Vote there.',
+                        icon: 'info',
+                        button: 'OK'
+                    });
+                    return;
+                }
+                if (payload.mode !== 'general') {
                     swal({ title: 'No offline general vote to sync', icon: 'info', button: 'OK' });
                     return;
                 }
