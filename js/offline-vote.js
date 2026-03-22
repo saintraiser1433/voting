@@ -137,6 +137,96 @@
         return votes;
     }
 
+    function buildPayloadFromForm(form) {
+        if (!form) return null;
+        return {
+            mode: window.__mode || 'general',
+            v_id: window.__voterId || 0,
+            acad_id: window.__acadId || 0,
+            dept_id: window.__deptId || 0,
+            votes: collectVotesFromForm(form)
+        };
+    }
+
+    /**
+     * Save ballot to localStorage for later sync. Use when the server cannot be reached
+     * (true offline or browser still reports navigator.onLine on LAN / flaky networks).
+     * @returns {boolean} true if stored successfully
+     */
+    window.persistBallotOffline = function (form) {
+        if (!form) return false;
+        var payload = buildPayloadFromForm(form);
+        savePending(payload);
+        if (!hasPending()) {
+            swal && swal({
+                title: 'Could not save on this device',
+                text: 'Allow storage for this site, or turn off private browsing, then try again.',
+                icon: 'error',
+                button: 'OK'
+            });
+            return false;
+        }
+        swal && swal({
+            title: 'Vote saved on this device',
+            text: 'The voting server could not be reached. Sync this vote later from the home screen when you have a connection to your sync URL.',
+            icon: 'info',
+            button: 'OK'
+        });
+        return true;
+    };
+
+    /**
+     * After voter confirms submit: if browser is offline or this origin is unreachable,
+     * persist locally; otherwise submit the form normally.
+     */
+    window.trySubmitBallotAfterConfirm = function (form, submitButton) {
+        if (!form) return;
+
+        function doOnlineSubmit() {
+            if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit(submitButton || undefined);
+            } else if (window.jQuery) {
+                window.jQuery(form).submit();
+            }
+        }
+
+        if (!navigator.onLine) {
+            window.persistBallotOffline(form);
+            return;
+        }
+
+        if (typeof fetch === 'undefined' || typeof AbortController === 'undefined') {
+            doOnlineSubmit();
+            return;
+        }
+
+        var ctrl = new AbortController();
+        var tid = setTimeout(function () {
+            try {
+                ctrl.abort();
+            } catch (x) { }
+        }, 6000);
+
+        fetch('ajax/check_ping.php?_=' + Date.now(), {
+            method: 'GET',
+            cache: 'no-store',
+            credentials: 'same-origin',
+            signal: ctrl.signal
+        })
+            .then(function (res) {
+                clearTimeout(tid);
+                if (res.ok) {
+                    doOnlineSubmit();
+                } else {
+                    window.persistBallotOffline(form);
+                }
+            })
+            .catch(function () {
+                clearTimeout(tid);
+                window.persistBallotOffline(form);
+            });
+    };
+
     window.syncVote = function () {
         if (!hasPending()) return;
         if (!syncUrl) {
@@ -229,22 +319,23 @@
 
                 e.preventDefault();
 
-                var votes = collectVotesFromForm(form);
-                var payload = {
-                    mode: window.__mode || 'general',
-                    v_id: window.__voterId || 0,
-                    acad_id: window.__acadId || 0,
-                    dept_id: window.__deptId || 0,
-                    votes: votes
-                };
-
+                var payload = buildPayloadFromForm(form);
                 savePending(payload);
-                swal && swal({
-                    title: 'Offline',
-                    text: 'You are offline. Your vote has been saved on this device. It will be synced when you go online.',
-                    icon: 'info',
-                    button: 'OK'
-                });
+                if (hasPending()) {
+                    swal && swal({
+                        title: 'Offline',
+                        text: 'You are offline. Your vote has been saved on this device. It will be synced when you go online.',
+                        icon: 'info',
+                        button: 'OK'
+                    });
+                } else {
+                    swal && swal({
+                        title: 'Could not save on this device',
+                        text: 'Allow storage for this site, or turn off private browsing.',
+                        icon: 'error',
+                        button: 'OK'
+                    });
+                }
             });
         }
 

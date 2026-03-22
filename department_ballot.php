@@ -167,7 +167,9 @@ $('#btn-submit').on('click', function (e) {
             }
             var bf = document.getElementById('ballotForm');
             var sub = document.getElementById('btn-submit');
-            if (bf && typeof bf.requestSubmit === 'function') {
+            if (typeof window.trySubmitBallotAfterConfirm === 'function') {
+                window.trySubmitBallotAfterConfirm(bf, sub);
+            } else if (bf && typeof bf.requestSubmit === 'function') {
                 bf.requestSubmit(sub || undefined);
             } else {
                 $('#ballotForm').submit();

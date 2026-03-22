@@ -494,7 +494,7 @@ $acads = $row ? $row['description'] : '';
                 if (!payload) {
                     swal({
                         title: 'No offline general vote to sync',
-                        text: 'Nothing is stored on this device. A vote is saved only after you confirm Submit on the ballot while the browser reports you are offline.',
+                        text: 'Nothing is stored on this device. After you confirm Submit, your vote is saved here only if you are offline or the voting server cannot be reached from this browser.',
                         icon: 'info',
                         button: 'OK'
                     });
