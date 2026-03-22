@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/ajax_cors_headers.php';
 require_once '../connection.php';
 require_once '../admin/includes/slugify.php';
 

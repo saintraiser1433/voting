@@ -4,6 +4,17 @@
     var pingIntervalMs = 10000;
     var syncUrl = (window.__syncUrl || '').replace(/\/+$/, ''); // trim trailing slash
 
+    /** Avoid ngrok free-tier HTML interstitial blocking API responses; required on cross-origin fetches. */
+    function ngrokSafeHeaders(extra) {
+        var h = { 'ngrok-skip-browser-warning': '1' };
+        if (extra) {
+            for (var k in extra) {
+                if (Object.prototype.hasOwnProperty.call(extra, k)) h[k] = extra[k];
+            }
+        }
+        return h;
+    }
+
     function ensureSyncOverlay() {
         var existing = document.getElementById('sync-overlay-offline');
         if (existing) return existing;
@@ -286,7 +297,7 @@
 
         fetch(syncUrl + '/ajax/sync_offline_vote.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: ngrokSafeHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify(payload)
         })
             .then(function (res) { return res.json(); })
@@ -315,7 +326,9 @@
             if (!hasPending()) return;
             if (!navigator.onLine) return;
 
-            fetch(syncUrl + '/ajax/check_ping.php?_=' + Date.now())
+            fetch(syncUrl + '/ajax/check_ping.php?_=' + Date.now(), {
+                headers: ngrokSafeHeaders()
+            })
                 .then(function (res) {
                     if (res.ok) {
                         showSyncPrompt();
