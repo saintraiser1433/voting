@@ -25,6 +25,7 @@ if (!isset($_POST['submitqwe'])) {
 }
 
 $idhidden = trim($_POST['idhidden'] ?? '');
+$reopen_flow = isset($_POST['reopen_flow']) && $_POST['reopen_flow'] === '1';
 $title = trim($_POST['titles'] ?? '');
 $date_start = trim($_POST['date_start'] ?? '');
 $date_end = trim($_POST['date_end'] ?? '');
@@ -51,9 +52,20 @@ $election_type_esc = $conn->real_escape_string($admin_mode);
 
 $ok = false;
 $error_msg = '';
+$reopen_skipped_schema = false;
 
 $date_start_sql = $date_start !== null ? "'" . $conn->real_escape_string($date_start) . "'" : 'NULL';
 $date_end_sql = $date_end !== null ? "'" . $conn->real_escape_string($date_end) . "'" : 'NULL';
+
+// Reopen voting (is_finished=0) when saving from "Reopen election" flow and end date is in the future
+$do_reopen = false;
+if ($reopen_flow && $idhidden !== '') {
+    if ($date_end !== null && strtotime($date_end) > time()) {
+        if ($date_start === null || strtotime($date_start) <= strtotime($date_end)) {
+            $do_reopen = true;
+        }
+    }
+}
 
 if ($idhidden === '') {
     // INSERT: new election starts as open (is_finished=0). Try with election_type + is_finished first.
@@ -87,13 +99,24 @@ if ($idhidden === '') {
     }
 } else {
     $id = (int) $idhidden;
-    $sql = "UPDATE election_title SET title='$title_esc', date_start=$date_start_sql, date_end=$date_end_sql WHERE id='$id' AND acad_id='$acad'";
+    $reopen_sql = $do_reopen ? ', is_finished=0' : '';
+    $sql = "UPDATE election_title SET title='$title_esc', date_start=$date_start_sql, date_end=$date_end_sql$reopen_sql WHERE id='$id' AND acad_id='$acad'";
     if ($conn->query($sql)) {
         $ok = true;
     } else {
-        if (strpos($conn->error ?? '', 'Unknown column') !== false) {
+        if (strpos($conn->error ?? '', 'Unknown column') !== false && $do_reopen) {
+            $sql2 = "UPDATE election_title SET title='$title_esc', date_start=$date_start_sql, date_end=$date_end_sql WHERE id='$id' AND acad_id='$acad'";
+            if ($conn->query($sql2)) {
+                $ok = true;
+                $reopen_skipped_schema = true;
+                $do_reopen = false;
+            } else {
+                $error_msg = $conn->error;
+            }
+        } elseif (strpos($conn->error ?? '', 'Unknown column') !== false) {
             if ($conn->query("UPDATE election_title SET title='$title_esc' WHERE id='$id' AND acad_id='$acad'")) {
                 $ok = true;
+                $do_reopen = false;
             } else {
                 $error_msg = $conn->error;
             }
@@ -104,7 +127,22 @@ if ($idhidden === '') {
 }
 
 if ($ok) {
-    $_SESSION['response'] = $idhidden === '' ? 'Election settings saved successfully.' : 'Election settings updated.';
+    if ($idhidden === '') {
+        $_SESSION['response'] = 'Election settings saved successfully.';
+    } else {
+        $_SESSION['response'] = 'Election settings updated.';
+        if ($reopen_flow) {
+            if ($do_reopen) {
+                $_SESSION['response'] .= ' Voting period is now open.';
+            } elseif ($reopen_skipped_schema) {
+                $_SESSION['response'] .= ' Dates saved; voting could not be reopened automatically (is_finished column missing).';
+            } elseif ($date_end === null || strtotime($date_end) <= time()) {
+                $_SESSION['response'] .= ' Voting was not reopened — set a future end date and save again.';
+            } elseif ($date_start !== null && $date_end !== null && strtotime($date_start) > strtotime($date_end)) {
+                $_SESSION['response'] .= ' Voting was not reopened — start date cannot be after end date.';
+            }
+        }
+    }
     $_SESSION['type'] = 'success';
 } else {
     $_SESSION['response'] = $error_msg ? 'Error: ' . $error_msg : 'An error has occurred.';

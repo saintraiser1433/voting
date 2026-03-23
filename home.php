@@ -82,6 +82,8 @@ $acads = $row ? $row['description'] : '';
                                         <i class="fa fa-cloud-upload"></i> Sync Offline Vote
                                     </button>
                                 </div>
+                                <?php include 'nav/voter_offline_sync_config.php'; ?>
+                                <?php include 'nav/voter_db_sync_config.php'; ?>
 
                                 <?php
                                 $sqlt = "SELECT * FROM election_title WHERE acad_id = '$acad' AND is_finished = 0 AND (election_type = 'general' OR election_type IS NULL)";

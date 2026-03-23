@@ -121,6 +121,12 @@
                     <span class="pcoded-mtext">App Config</span>
                 </a>
             </li>
+            <li class="">
+                <a href="db_sync.php">
+                    <span class="pcoded-micon"><img src="../libraries/img/database.png"></span>
+                    <span class="pcoded-mtext">Database sync</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

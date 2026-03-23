@@ -57,7 +57,7 @@ if ($cfgRes && $cfgRes->num_rows > 0) {
                                                 <div class="page-header-title">
                                                     <div class="d-inline">
                                                         <h4>Application Configuration</h4>
-                                                        <span>Configure ngrok sync target URL for offline voting.</span>
+                                                        <span>Configure ngrok sync target URL for offline voting. To copy the live database to localhost, use <a href="db_sync.php">Database sync</a>.</span>
                                                     </div>
                                                 </div>
                                             </div>

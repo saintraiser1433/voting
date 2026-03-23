@@ -45,6 +45,12 @@ if (!$chk && strpos($conn->error ?? '', 'Unknown column') !== false) {
             <div id="offline-banner" class="alert alert-warning text-center m-0" style="display:none;">
                 You are currently offline. Your vote will be stored on this device and synced when you go online.
             </div>
+            <div class="row justify-content-center m-0">
+                <div class="col-xl-8 col-md-12 px-2 px-md-3">
+                    <?php include 'nav/voter_offline_sync_config.php'; ?>
+                    <?php include 'nav/voter_db_sync_config.php'; ?>
+                </div>
+            </div>
             <div class="pcoded-main-container">
                 <div class="pcoded-wrapper">
                     <div class="main-body">

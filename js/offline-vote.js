@@ -1,8 +1,19 @@
 // Offline voting helper shared by ballot.php and department_ballot.php
 (function () {
     var STORAGE_KEY = 'pending_vote';
+    var VOTER_SYNC_LS = 'voter_offline_sync_url'; // voter-side App Config (localStorage)
     var pingIntervalMs = 10000;
-    var syncUrl = (window.__syncUrl || '').replace(/\/+$/, ''); // trim trailing slash
+
+    /** Voter localStorage overrides admin default (window.__syncUrl). */
+    function getEffectiveSyncUrl() {
+        try {
+            var ls = localStorage.getItem(VOTER_SYNC_LS);
+            if (ls && String(ls).trim()) {
+                return String(ls).trim().replace(/\/+$/, '');
+            }
+        } catch (e) { }
+        return (window.__syncUrl || '').replace(/\/+$/, '');
+    }
 
     /** Avoid ngrok free-tier HTML interstitial blocking API responses; required on cross-origin fetches. */
     function ngrokSafeHeaders(extra) {
@@ -270,8 +281,14 @@
 
     window.syncVote = function () {
         if (!hasPending()) return;
+        var syncUrl = getEffectiveSyncUrl();
         if (!syncUrl) {
-            swal && swal({ title: 'Sync URL not configured', icon: 'error', button: 'OK' });
+            swal && swal({
+                title: 'Sync URL not configured',
+                text: 'Set it under “Offline sync URL (this device)” on Home/Ballot, or ask admin to set App Config.',
+                icon: 'error',
+                button: 'OK'
+            });
             return;
         }
         if (!navigator.onLine) {
@@ -321,12 +338,13 @@
     };
 
     function startPingLoop() {
-        if (!syncUrl) return;
         setInterval(function () {
             if (!hasPending()) return;
             if (!navigator.onLine) return;
+            var remote = getEffectiveSyncUrl();
+            if (!remote) return;
 
-            fetch(syncUrl + '/ajax/check_ping.php?_=' + Date.now(), {
+            fetch(remote + '/ajax/check_ping.php?_=' + Date.now(), {
                 headers: ngrokSafeHeaders()
             })
                 .then(function (res) {

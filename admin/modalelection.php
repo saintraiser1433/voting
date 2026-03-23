@@ -19,6 +19,7 @@ $save_url = 'save_election_settings.php?return=' . urlencode($current_page);
                 </button>
             </div>
             <form action="<?php echo htmlspecialchars($save_url); ?>" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="reopen_flow" id="reopen_flow" value="0">
                 <div class="modal-body">
                     <?php
                     // Load election settings for current responsibility (General or Department)

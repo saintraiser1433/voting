@@ -47,6 +47,8 @@ $acads = $row ? $row['description'] : '';
                                         <i class="fa fa-cloud-upload"></i> Sync Offline Vote
                                     </button>
                                 </div>
+                                <?php include 'nav/voter_offline_sync_config.php'; ?>
+                                <?php include 'nav/voter_db_sync_config.php'; ?>
 
                                 <?php
                                 // Department election: must have a row with election_type='department' and is_finished=0
