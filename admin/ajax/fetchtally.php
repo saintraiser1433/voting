@@ -113,7 +113,9 @@ $acad = $_SESSION['acad'];
                         $final = 0;
                         $from = $rs->num_rows;
                         $to = $rs12->num_rows;
-                        @$final = $from / $to * 100;
+                        if ($to > 0) {
+                            $final = ($from / $to) * 100;
+                        }
                         $round = round($final, 2);
                         ?>
                         <span class="elec bg-primary p-1" style="border-radius: 50px; border:2px solid white"><?php echo $round; ?>%</span>
@@ -165,15 +167,17 @@ $acad = $_SESSION['acad'];
                                 $rsst = $conn->query($sqltt);
                                 $sq = "SELECT * FROM voters where acad_id='$acad'";
                                 $rpq = $conn->query($sq);
-                                @$finalt = 0;
-                                @$from1 = $rsst->num_rows;
-                                @$to1 = $rpq->num_rows;
-                                @$finalt = $from1 / $to1 * 100;
-                                @$roundt = round($finalt);
+                                $finalt = 0;
+                                $from1 = $rsst->num_rows;
+                                $to1 = $rpq->num_rows;
+                                if ($to1 > 0) {
+                                    $finalt = ($from1 / $to1) * 100;
+                                }
+                                $roundt = round($finalt);
                                 echo '
-                                                                    <br><label> ' . @$rsst->num_rows . ' - Votes</label>
+                                                                    <br><label> ' . $rsst->num_rows . ' - Votes</label>
                                                                     <div class="progress">
-                                                                        <div class="progress-bar progress-bar-striped progress-bar-primary" role="progressbar" style="width: ' . @$roundt . '%" aria-valuenow="' . @$roundt . '" aria-valuemin="0" aria-valuemax="' . @$rpq->num_rows . '"></div>
+                                                                        <div class="progress-bar progress-bar-striped progress-bar-primary" role="progressbar" style="width: ' . $roundt . '%" aria-valuenow="' . $roundt . '" aria-valuemin="0" aria-valuemax="' . $rpq->num_rows . '"></div>
                                                                     </div><br>';
                             }
 
