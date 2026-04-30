@@ -70,3 +70,32 @@ $admin_mode = isset($_SESSION['admin_mode']) ? $_SESSION['admin_mode'] : 'genera
         </div>
     </div>
 </nav>
+<div class="admin-mode-toggle-mobile-bar d-lg-none">
+    <div class="btn-group btn-group-sm w-100" role="group">
+        <a href="switch_admin_mode.php?mode=general" class="btn <?php echo $admin_mode === 'general' ? 'btn-primary' : 'btn-outline-secondary'; ?>">General Voting</a>
+        <a href="switch_admin_mode.php?mode=department" class="btn <?php echo $admin_mode === 'department' ? 'btn-primary' : 'btn-outline-secondary'; ?>">Department Voting</a>
+    </div>
+</div>
+<style>
+    .admin-mode-toggle-mobile-bar {
+        display: none;
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        z-index: 1029;
+        background: #fff;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 6px 10px;
+    }
+
+    @media only screen and (max-width: 991px) {
+        .admin-mode-toggle-mobile-bar {
+            display: block;
+        }
+
+        .pcoded-main-container {
+            margin-top: 102px !important;
+        }
+    }
+</style>
