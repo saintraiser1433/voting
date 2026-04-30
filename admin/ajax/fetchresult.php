@@ -20,7 +20,7 @@ if ($admin_mode === 'department') {
         }
     }
     $type_esc = $conn->real_escape_string($admin_mode);
-    $et = $conn->query("SELECT id, is_finished FROM election_title WHERE acad_id = '$acad' AND election_type = 'department' LIMIT 1");
+    $et = $conn->query("SELECT id, is_finished, date_start, date_end FROM election_title WHERE acad_id = '$acad' AND election_type = 'department' LIMIT 1");
     if (!$et && strpos($conn->error ?? '', 'Unknown column') !== false) {
         $et = null;
     }
@@ -53,8 +53,8 @@ if ($admin_mode === 'department') {
     <?php } ?>
 
     <?php
-    $date_start = isset($election_row['date_start']) ? $election_row['date_start'] : null;
-    $date_end = isset($election_row['date_end']) ? $election_row['date_end'] : null;
+    $date_start = ($election_row && !empty($election_row['date_start'])) ? $election_row['date_start'] : null;
+    $date_end = ($election_row && !empty($election_row['date_end'])) ? $election_row['date_end'] : null;
     $label = 'Department voting';
     $running_time_id = 'dept-result';
     include '../includes/election_running_time.php';
