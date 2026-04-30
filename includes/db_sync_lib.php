@@ -254,7 +254,7 @@ if (!function_exists('db_sync_curl_post')) {
             return ['ok' => false, 'body' => '', 'error' => $err ?: 'HTTP request failed'];
         }
         if ($code >= 400) {
-            return ['ok' => false, 'body' => $body, 'error' => 'HTTP ' . $code];
+            return ['ok' => false, 'body' => $body, 'error' => 'HTTP ' . $code . ' — ' . $url];
         }
         return ['ok' => true, 'body' => (string)$body, 'error' => ''];
     }
@@ -274,11 +274,24 @@ if (!function_exists('db_sync_pull_from_remote')) {
         if ($base === '' || !preg_match('#^https?://#i', $base)) {
             return ['ok' => false, 'message' => 'Remote URL must start with http:// or https://'];
         }
-        $exportUrl = $base . '/ajax/db_sync_export.php';
+        $exportOverride = trim(db_sync_get_setting($conn, 'db_sync_export_url', ''));
+        if ($exportOverride !== '') {
+            $exportUrl = rtrim($exportOverride, "/\r\n\t ");
+            if (!preg_match('#^https?://#i', $exportUrl)) {
+                return ['ok' => false, 'message' => 'Export URL override must start with http:// or https://'];
+            }
+        } else {
+            $exportUrl = $base . '/ajax/db_sync_export.php';
+        }
         $verifySsl = db_sync_get_setting($conn, 'db_sync_insecure_ssl', '0') !== '1';
         $res = db_sync_curl_post($exportUrl, ['sync_key' => $syncKey], 180, $verifySsl);
         if (!$res['ok']) {
-            return ['ok' => false, 'message' => 'Remote request failed: ' . ($res['error'] ?: 'unknown')];
+            $err = $res['error'] ?: 'unknown';
+            $msg = 'Remote request failed: ' . $err;
+            if (strpos($err, 'HTTP 404') !== false) {
+                $msg .= ' Deploy ajax/db_sync_export.php on the remote, or set “Export endpoint URL” to its full address. Base URL must be the folder that contains ajax/ (not …/admin).';
+            }
+            return ['ok' => false, 'message' => $msg];
         }
         $json = json_decode($res['body'], true);
         if (!is_array($json) || empty($json['ok'])) {

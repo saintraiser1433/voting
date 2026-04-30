@@ -24,11 +24,13 @@ function db_sync_save_kv(mysqli $conn, string $key, string $value): void
 
 $remote = isset($_POST['db_sync_remote_url']) ? trim((string)$_POST['db_sync_remote_url']) : '';
 $remote = rtrim($remote);
+$exportUrl = isset($_POST['db_sync_export_url']) ? trim((string)$_POST['db_sync_export_url']) : '';
 $key = isset($_POST['db_sync_api_key']) ? trim((string)$_POST['db_sync_api_key']) : '';
 $allow = isset($_POST['allow_voter_db_pull']) ? '1' : '0';
 $insecureSsl = isset($_POST['db_sync_insecure_ssl']) ? '1' : '0';
 
 db_sync_save_kv($conn, 'db_sync_remote_url', $remote);
+db_sync_save_kv($conn, 'db_sync_export_url', $exportUrl);
 if ($key !== '') {
     db_sync_save_kv($conn, 'db_sync_api_key', $key);
 }

@@ -16,6 +16,7 @@ if ($remoteUrl === '') {
 $apiKeySet = db_sync_get_setting($conn, 'db_sync_api_key', '') !== '';
 $allowVoter = db_sync_get_setting($conn, 'allow_voter_db_pull', '0') === '1';
 $insecureSsl = db_sync_get_setting($conn, 'db_sync_insecure_ssl', '0') === '1';
+$exportUrlOverride = db_sync_get_setting($conn, 'db_sync_export_url', '');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -74,7 +75,14 @@ $insecureSsl = db_sync_get_setting($conn, 'db_sync_insecure_ssl', '0') === '1';
                                                                 <input type="url" class="form-control" name="db_sync_remote_url"
                                                                     placeholder="https://xxxx.ngrok-free.app/voting"
                                                                     value="<?php echo htmlspecialchars($remoteUrl); ?>">
-                                                                <small class="text-muted">Public URL of this app (same as offline sync URL). Used when you click Pull below.</small>
+                                                                <small class="text-muted">Folder where the project lives on the web server—the path must contain an <code>ajax</code> directory next to <code>admin</code> (not the <code>admin</code> URL). Example: if the export script opens at <code>https://host/voting/ajax/db_sync_export.php</code>, put <code>https://host/voting</code> here.</small>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Export endpoint URL <span class="text-muted font-weight-normal">(optional)</span></label>
+                                                                <input type="url" class="form-control" name="db_sync_export_url"
+                                                                    placeholder="Leave blank → {base}/ajax/db_sync_export.php"
+                                                                    value="<?php echo htmlspecialchars($exportUrlOverride); ?>">
+                                                                <small class="text-muted">If Pull returns HTTP 404, paste the exact URL that loads <code>db_sync_export.php</code> on the remote (full https address).</small>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>Sync API key</label>
