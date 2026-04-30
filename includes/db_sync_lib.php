@@ -229,7 +229,7 @@ if (!function_exists('db_sync_curl_post')) {
     /**
      * @return array{ok: bool, body: string, error?: string}
      */
-    function db_sync_curl_post(string $url, array $postFields, int $timeout = 180): array
+    function db_sync_curl_post(string $url, array $postFields, int $timeout = 180, bool $verifySsl = true): array
     {
         if (!function_exists('curl_init')) {
             return ['ok' => false, 'body' => '', 'error' => 'PHP cURL extension is not enabled.'];
@@ -239,6 +239,10 @@ if (!function_exists('db_sync_curl_post')) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        if (!$verifySsl) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'ngrok-skip-browser-warning: 1',
         ]);
@@ -271,7 +275,8 @@ if (!function_exists('db_sync_pull_from_remote')) {
             return ['ok' => false, 'message' => 'Remote URL must start with http:// or https://'];
         }
         $exportUrl = $base . '/ajax/db_sync_export.php';
-        $res = db_sync_curl_post($exportUrl, ['sync_key' => $syncKey]);
+        $verifySsl = db_sync_get_setting($conn, 'db_sync_insecure_ssl', '0') !== '1';
+        $res = db_sync_curl_post($exportUrl, ['sync_key' => $syncKey], 180, $verifySsl);
         if (!$res['ok']) {
             return ['ok' => false, 'message' => 'Remote request failed: ' . ($res['error'] ?: 'unknown')];
         }

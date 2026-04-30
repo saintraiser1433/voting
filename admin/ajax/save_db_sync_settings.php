@@ -26,12 +26,14 @@ $remote = isset($_POST['db_sync_remote_url']) ? trim((string)$_POST['db_sync_rem
 $remote = rtrim($remote);
 $key = isset($_POST['db_sync_api_key']) ? trim((string)$_POST['db_sync_api_key']) : '';
 $allow = isset($_POST['allow_voter_db_pull']) ? '1' : '0';
+$insecureSsl = isset($_POST['db_sync_insecure_ssl']) ? '1' : '0';
 
 db_sync_save_kv($conn, 'db_sync_remote_url', $remote);
 if ($key !== '') {
     db_sync_save_kv($conn, 'db_sync_api_key', $key);
 }
 db_sync_save_kv($conn, 'allow_voter_db_pull', $allow);
+db_sync_save_kv($conn, 'db_sync_insecure_ssl', $insecureSsl);
 
 $_SESSION['response'] = 'Database sync settings saved. Set the same API key on the remote (ngrok) server.';
 $_SESSION['type'] = 'success';

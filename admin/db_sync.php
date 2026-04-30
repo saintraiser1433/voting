@@ -15,6 +15,7 @@ if ($remoteUrl === '') {
 }
 $apiKeySet = db_sync_get_setting($conn, 'db_sync_api_key', '') !== '';
 $allowVoter = db_sync_get_setting($conn, 'allow_voter_db_pull', '0') === '1';
+$insecureSsl = db_sync_get_setting($conn, 'db_sync_insecure_ssl', '0') === '1';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,6 +58,7 @@ $allowVoter = db_sync_get_setting($conn, 'allow_voter_db_pull', '0') === '1';
                                                 <div class="alert alert-warning">
                                                     <strong>Warning:</strong> Pulling will <strong>delete and replace</strong> matching tables on this database (except the <code>admin</code> table is never imported).
                                                     Uploaded images are not copied—only database rows. Use the same API key on <strong>both</strong> servers (remote must allow export).
+                                                    If Pull fails with an SSL certificate error on Windows/WAMP, enable <strong>Skip SSL verification</strong> below or set <code>curl.cainfo</code> in <code>php.ini</code> to Mozilla’s CA bundle (<code>cacert.pem</code>).
                                                 </div>
                                             </div>
                                             <div class="col-md-8">
@@ -81,6 +83,11 @@ $allowVoter = db_sync_get_setting($conn, 'allow_voter_db_pull', '0') === '1';
                                                                     autocomplete="new-password">
                                                                 <small class="text-muted">Must match <code>db_sync_api_key</code> stored in <code>app_settings</code> on the <strong>remote</strong> server (set it there via this same form).</small>
                                                             </div>
+                                                            <div class="form-check mb-2">
+                                                                <input type="checkbox" class="form-check-input" name="db_sync_insecure_ssl" id="db_sync_insecure_ssl" value="1" <?php echo $insecureSsl ? 'checked' : ''; ?>>
+                                                                <label class="form-check-label" for="db_sync_insecure_ssl">Skip SSL certificate verification (development / ngrok)</label>
+                                                            </div>
+                                                            <small class="text-muted d-block mb-3">Turn on only when PHP reports “unable to get local issuer certificate.” Prefer fixing <code>php.ini</code> CA bundle for production.</small>
                                                             <div class="form-check mb-3">
                                                                 <input type="checkbox" class="form-check-input" name="allow_voter_db_pull" id="allow_voter_db_pull" value="1" <?php echo $allowVoter ? 'checked' : ''; ?>>
                                                                 <label class="form-check-label" for="allow_voter_db_pull">Allow logged-in voters (localhost only) to run Pull from the voter home page</label>
