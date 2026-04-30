@@ -30,34 +30,7 @@ if ($hintUrl === '') {
 }
 ?>
 <?php if ($voterPullEnabled) { ?>
-<div class="card mb-3 border-secondary" id="voter-db-sync-card">
-    <div class="card-block py-3">
-        <h6 class="mb-2"><i class="fa fa-database text-secondary"></i> Pull database from server (dev only)</h6>
-        <p class="text-muted small mb-2">
-            Replaces <strong>this computer’s</strong> voting database with data from the public site (same as Admin → Database sync).
-            Only shown on localhost/LAN. You need the <strong>sync API key</strong> from your administrator.
-        </p>
-        <div class="form-row align-items-end">
-            <div class="col-md-5 mb-2 mb-md-0">
-                <label class="small text-muted mb-1" for="voterDbSyncUrl">Remote base URL</label>
-                <input type="url" class="form-control form-control-sm" id="voterDbSyncUrl"
-                    placeholder="https://xxxx.ngrok-free.app/voting"
-                    value="<?php echo htmlspecialchars($hintUrl); ?>"
-                    autocomplete="off">
-            </div>
-            <div class="col-md-4 mb-2 mb-md-0">
-                <label class="small text-muted mb-1" for="voterDbSyncKey">Sync API key</label>
-                <input type="password" class="form-control form-control-sm" id="voterDbSyncKey" placeholder="Secret key" autocomplete="off">
-            </div>
-            <div class="col-md-3">
-                <button type="button" class="btn btn-secondary btn-sm btn-block" id="voterDbSyncPull">
-                    <i class="fa fa-download"></i> Pull database
-                </button>
-            </div>
-        </div>
-        <p class="small text-danger mb-0 mt-2" id="voterDbSyncMsg"></p>
-    </div>
-</div>
+
 <script>
 (function () {
     var urlEl = document.getElementById('voterDbSyncUrl');
