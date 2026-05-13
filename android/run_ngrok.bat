@@ -1,7 +1,7 @@
 @echo off
-set "NGROK_URL=birdless-unalarming-delpha.ngrok-free.dev"
+set "NGROK_URL=unbluffed-figgy-maranda.ngrok-free.dev"
 set "PORT=80"
-set "TOKEN=3B0ioILh8EyOn9jpjeQTKUphOck_4NmwVNHMngo8DfRtU3x7k"
+set "TOKEN=36NQvLIobzuly5nWSskmHlegDOG_6t7zbkKm7WQfkaJ1K8abS"
 
 echo Adding Ngrok authtoken...
 ngrok config add-authtoken %TOKEN%
