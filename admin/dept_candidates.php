@@ -154,7 +154,7 @@ if (isset($_POST['update'])) {
                                                                 $i = 1;
                                                                 while ($row = $res ? $res->fetch_assoc() : null) {
                                                                     if (!$row) break;
-                                                                    $m = isset($row['mname'][0]) ? $row['mname'][0] . '.' : '';
+                                                                    $m = middle_initial($row['mname']);
                                                                     $name = $row['lname'] . ', ' . $row['fname'] . ' ' . $m;
                                                                     echo '<tr><td>' . $i++ . '</td><td><img src="../' . htmlspecialchars($row['img']) . '" class="rounded-circle" style="width:30px;height:30px;"></td><td class="text-uppercase">' . htmlspecialchars($name) . '</td><td>' . htmlspecialchars($row['department_name'] ?? '-') . '</td><td>' . htmlspecialchars($row['pos_desc']) . '</td>';
                                                                     echo '<td style="display:none">' . $row['dc_id'] . '</td><td style="display:none">' . $row['pos_id'] . '</td><td style="display:none">' . htmlspecialchars($row['stud_id']) . '</td><td style="display:none">' . htmlspecialchars($row['img']) . '</td><td style="display:none">' . htmlspecialchars($row['platform'] ?? '') . '</td>';

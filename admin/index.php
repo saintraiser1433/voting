@@ -2,14 +2,15 @@
 include '../connection.php';
 if (isset($_POST['submits'])) {
     $username = $_POST['username'];
-    $password = md5($_POST['password']);
+    $password = md5($_POST['password'] ?? '');
     $sql = "SELECT * FROM admin where username='$username' and password='$password'";
     $rs = $conn->query($sql);
-    $row = $rs->fetch_assoc();
-    if ($rs->num_rows > 0) {
+    if ($rs && $rs->num_rows > 0) {
+        $row = $rs->fetch_assoc();
         $_SESSION['at'] = $row['id'];
         $_SESSION['username'] = $row['username'];
         header("Location:dashboard.php");
+        exit;
     } else {
         $_SESSION['response'] = "Incorrect Credentials";
         $_SESSION['type'] = "danger";

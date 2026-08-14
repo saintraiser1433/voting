@@ -10,7 +10,7 @@ if (isset($_POST['myids'])) {
     $res = $conn->query($sql);
     if ($res && $res->num_rows > 0) {
         $row = $res->fetch_assoc();
-        $m = isset($row['mname'][0]) ? $row['mname'][0] . '.' : '';
+        $m = middle_initial($row['mname'], '');
         $fname = $row['lname'] . ", " . $row['fname'] . " " . $m;
         $gr = $row['grade_level'] . " " . $row['strand'] . "-" . $row['section'];
         $department_id = (int) $row['department_id'];

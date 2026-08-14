@@ -239,7 +239,7 @@ $acads = $row ? $row['description'] : '';
                                                 <div class="card-block">
                                                     <div class="row align-items-center">
                                                         <div class="col">
-                                                            <h3 class="m-b-5 text-uppercase"><b>' . htmlspecialchars($row['lname'] . ', ' . $row['fname'] . ' ' . (isset($row['mname'][0]) ? $row['mname'][0] . '.' : '')) . '</b></h3>
+                                                            <h3 class="m-b-5 text-uppercase"><b>' . htmlspecialchars($row['lname'] . ', ' . $row['fname'] . ' ' . middle_initial($row['mname'])) . '</b></h3>
                                                         </div>
                                                         <div class="col col-auto text-right">
                                                             <i class="feather icon-check-circle f-50 text-c-white"></i>
@@ -415,7 +415,7 @@ $acads = $row ? $row['description'] : '';
         $cfgRes = $conn->query("SELECT setting_value FROM app_settings WHERE setting_key='ngrok_sync_url' LIMIT 1");
         if ($cfgRes && $cfgRes->num_rows > 0) {
             $cfgRow = $cfgRes->fetch_assoc();
-            $syncUrl = trim($cfgRow['setting_value']);
+            $syncUrl = trim($cfgRow['setting_value'] ?? '');
         }
     }
     ?>

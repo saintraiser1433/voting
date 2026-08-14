@@ -88,6 +88,7 @@
                             $vote1 = $_SESSION['v_id'];
                             $sql = "SELECT * FROM candidate LEFT JOIN voters ON candidate.stud_id=voters.stud_id LEFT JOIN vote ON candidate.c_id=vote.candidate_id LEFT JOIN partylist ON candidate.p_id=partylist.p_id LEFT JOIN position ON candidate.pos_id=position.pos_id where vote.voter_id='$vote1' and vote.acad_id='$acad' order by position.priority ASC";
                             $query = $conn->query($sql);
+                            if ($query) {
                             while ($row = $query->fetch_assoc()) {
                                 if ($row['p_id'] == 0) {
                                     $party = "IND";
@@ -97,9 +98,10 @@
                                 echo "
                                         <div class='row votelist' style='font-size:11px;'>
                                           <span class='col-lg-4 col-4 text-uppercase'><span class='pull-right'><b>" . $row['description'] . " :</b></span></span> 
-                                          <span class='col-lg-8 col-8 text-uppercase'>" . $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0] . "- (" . $party . ")</span>
+                                          <span class='col-lg-8 col-8 text-uppercase'>" . $row['lname'] . ", " . $row['fname'] . " " . middle_initial($row['mname']) . "- (" . $party . ")</span>
                                         </div>
                                       ";
+                            }
                             }
                             ?>
                         </div>

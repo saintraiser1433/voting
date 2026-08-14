@@ -18,13 +18,13 @@ $acad = $_SESSION['acad'];
                         $sql12 = "SELECT DISTINCT v_id FROM voters where acad_id='$acad'";
                         $rs12 = $conn->query($sql12);
                         $final = 0;
-                        $from = $rs->num_rows;
-                        $to = $rs12->num_rows;
+                        $from = ($rs) ? $rs->num_rows : 0;
+                        $to = ($rs12) ? $rs12->num_rows : 0;
                         @$final = $from / $to * 100;
                         $round = round($final, 2);
                         ?>
                         <span class="elec bg-primary p-1" style="border-radius: 50px; border:2px solid white"><?php echo $round; ?>%</span>
-                        <span>- <?php echo $rs->num_rows ?> of <?php echo $rs12->num_rows ?> voters are completely voted</span>
+                        <span>- <?php echo ($rs ? $rs->num_rows : 0); ?> of <?php echo ($rs12 ? $rs12->num_rows : 0); ?> voters are completely voted</span>
                     </div>
                     <div class="col col-auto text-right">
 
@@ -66,21 +66,21 @@ $acad = $_SESSION['acad'];
                                 } else {
                                     $pn = $rowt['party_name'];
                                 }
-                                echo '<label class="text-primary text-uppercase">' . $rowt['lname'] . ", " . $rowt['fname'] . " " . $rowt['mname'][0] . ". (" . $pn . ')</label>';
+                                echo '<label class="text-primary text-uppercase">' . $rowt['lname'] . ", " . $rowt['fname'] . " " . middle_initial($rowt['mname']) . " (" . $pn . ')</label>';
 
                                 $sqltt = "SELECT * FROM vote WHERE acad_id='$acad' and candidate_id = '" . $rowt['c_id'] . "'";
                                 $rsst = $conn->query($sqltt);
                                 $sq = "SELECT * FROM voters where acad_id='$acad'";
                                 $rpq = $conn->query($sq);
-                                @$finalt = 0;
-                                @$from1 = $rsst->num_rows;
-                                @$to1 = $rpq->num_rows;
-                                @$finalt = $from1 / $to1 * 100;
-                                @$roundt = round($finalt);
+                                $finalt = 0;
+                                $from1 = ($rsst) ? $rsst->num_rows : 0;
+                                $to1 = ($rpq) ? $rpq->num_rows : 0;
+                                $finalt = ($to1 > 0) ? ($from1 / $to1 * 100) : 0;
+                                $roundt = round($finalt);
                                 echo '
-                                                                    <br><label> ' . @$rsst->num_rows . ' - Votes</label>
+                                                                    <br><label> ' . $from1 . ' - Votes</label>
                                                                     <div class="progress">
-                                                                        <div class="progress-bar progress-bar-striped progress-bar-primary" role="progressbar" style="width: ' . @$roundt . '%" aria-valuenow="' . @$roundt . '" aria-valuemin="0" aria-valuemax="' . @$rpq->num_rows . '"></div>
+                                                                        <div class="progress-bar progress-bar-striped progress-bar-primary" role="progressbar" style="width: ' . $roundt . '%" aria-valuenow="' . $roundt . '" aria-valuemin="0" aria-valuemax="' . $to1 . '"></div>
                                                                     </div><br>';
                             }
 

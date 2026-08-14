@@ -5,10 +5,10 @@ use Dompdf\Dompdf;
 $document = new Dompdf();
 include '../connection.php';
 
-$acad = $_GET['acad'];
+$acad = isset($_GET['acad']) ? (int) $_GET['acad'] : 0;
 $sqlps = "SELECT * FROM acad_tbl where acad_id = $acad";
 $rsxx = $conn->query($sqlps);
-$rowqq = $rsxx->fetch_assoc();
+$rowqq = ($rsxx && $rsxx->num_rows > 0) ? $rsxx->fetch_assoc() : ['description' => ''];
 $output = "
     <html>
     <head>

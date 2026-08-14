@@ -17,7 +17,7 @@ if (isset($_POST['id'])) {
     $sql = "SELECT * FROM courses WHERE acad_id='$acad' AND status=1 ORDER BY course_code ASC";
     $result = $conn->query($sql);
     
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             echo '<option value="' . $row['course_code'] . '">' . $row['course_code'] . ' - ' . $row['course_name'] . '</option>';
         }

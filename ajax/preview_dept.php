@@ -22,7 +22,7 @@ if ($query) {
                         $cmquery = $conn->query($sql2);
                         if ($cmquery && $cmquery->num_rows > 0) {
                             $cmrow = $cmquery->fetch_assoc();
-                            $m = isset($cmrow['mname'][0]) ? $cmrow['mname'][0] . '.' : '';
+                            $m = middle_initial($cmrow['mname']);
                             $output .= "<div class='row votelist'><span class='col-sm-4 col-4 text-uppercase'><span class='pull-right'><b>" . htmlspecialchars($row['description']) . " :</b></span></span><span class='col-sm-8 col-8 text-uppercase'>" . htmlspecialchars($cmrow['lname'] . ", " . $cmrow['fname'] . " " . $m) . "</span></div>";
                         }
                     }
@@ -33,7 +33,7 @@ if ($query) {
                 $csquery = $conn->query($sql2);
                 if ($csquery && $csquery->num_rows > 0) {
                     $csrow = $csquery->fetch_assoc();
-                    $m = isset($csrow['mname'][0]) ? $csrow['mname'][0] . '.' : '';
+                    $m = middle_initial($csrow['mname']);
                     $output .= "<div class='row votelist'><span class='col-sm-4 col-4 text-uppercase'><span class='pull-right'><b>" . htmlspecialchars($row['description']) . " :</b></span></span><span class='col-sm-8 col-8 text-uppercase'>" . htmlspecialchars($csrow['lname'] . ", " . $csrow['fname'] . " " . $m) . "</span></div>";
                 }
             }

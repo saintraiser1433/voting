@@ -85,7 +85,7 @@ if (isset($_POST['update'])) {
 
 $sql = "SELECT * FROM partylist where p_id='$party'";
 $rtt = $conn->query($sql);
-$roww =  $rtt->fetch_assoc();
+$roww = ($rtt && $rtt->num_rows > 0) ? $rtt->fetch_assoc() : null;
 
 
 ?>
@@ -282,7 +282,7 @@ $roww =  $rtt->fetch_assoc();
                                                                             <th scope="row"><?php echo $i++; ?></th>
                                                                             <td style="display:none"><?php echo $row['c_id'];  ?></td>
                                                                             <td><img src="../<?php echo $row['myimg']; ?>" class="rounded-circle" style="width:30px;height:30px;"></td>
-                                                                            <td class="text-uppercase"><?php echo $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0]; ?></td>
+                                                                            <td class="text-uppercase"><?php echo $row['lname'] . ", " . $row['fname'] . " " . middle_initial($row['mname'], ''); ?></td>
                                                                             <td class="text-uppercase"><?php echo $row['description'] ?></td>
                                                                             <td style="display: none"><?php echo $row['pos_id'] ?></td>
                                                                             <td style="display: none"><?php echo $row['stud_id'] ?></td>

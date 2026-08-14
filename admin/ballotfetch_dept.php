@@ -27,7 +27,7 @@ while ($row = $query->fetch_assoc()) {
     if ($cq && $cq->num_rows > 0) {
         while ($crow = $cq->fetch_assoc()) {
             $img = !empty($crow['img']) ? $crow['img'] : 'libraries/img/logo.png';
-            $m = isset($crow['mname'][0]) ? $crow['mname'][0] . '.' : '';
+            $m = middle_initial($crow['mname']);
             $candidate .= '<div class="row mt-2"><ul><li><img src="../' . htmlspecialchars($img) . '" style="width:120px;height:120px;border:2px solid steelblue;border-radius:10px;"></li></ul>';
             $candidate .= '<div class="text-center mt-3 pl-3"><h4 class="text-uppercase font-weight-bold" id="myh3">' . htmlspecialchars($crow['fname'] . ',' . $crow['lname'] . ' ' . $m) . '</h4></div></div>';
         }

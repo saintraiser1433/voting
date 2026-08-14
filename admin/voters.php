@@ -231,7 +231,7 @@ if (isset($_GET['re'])) {
 
                                                                             <td><?php echo $row['stud_id']; ?></td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '') ?>
+                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . middle_initial($row['mname'], '') ?>
                                                                             </td>
                                                                             <td><?php echo $row['grade_level']; ?></td>
                                                                             <td><?php
@@ -323,7 +323,7 @@ if (isset($_GET['re'])) {
 
                                                                             <td><?php echo $row['stud_id']; ?></td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '') ?>
+                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . middle_initial($row['mname'], '') ?>
                                                                             </td>
                                                                             <td><?php echo $row['grade_level']; ?></td>
                                                                             <td><?php

@@ -220,7 +220,7 @@ $acads = $row ? $row['description'] : '';
         $cfgRes = $conn->query("SELECT setting_value FROM app_settings WHERE setting_key='ngrok_sync_url' LIMIT 1");
         if ($cfgRes && $cfgRes->num_rows > 0) {
             $cfgRow = $cfgRes->fetch_assoc();
-            $syncUrl = trim($cfgRow['setting_value']);
+            $syncUrl = trim($cfgRow['setting_value'] ?? '');
         }
     }
     ?>

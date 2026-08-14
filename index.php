@@ -30,7 +30,7 @@ if (isset($_POST['submits'])) {
             $_SESSION['v_id'] = $row['v_id'];
             $_SESSION['face'] = $row['v_id'];
             $_SESSION['dept_id'] = $row['department_id'];
-            $m = isset($row['mname'][0]) ? $row['mname'][0] . '.' : '';
+            $m = (!empty($row['mname'])) ? substr($row['mname'], 0, 1) . '.' : '';
             $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . $m;
             if ($_SESSION['mypass'] === 's') {
                 header("Location:indexss.php");
@@ -59,7 +59,7 @@ if (isset($_POST['submits'])) {
             $_SESSION['mypass'] = (isset($_POST['myps1']) && $_POST['myps1'] !== '') ? $row['password'] : 's';
             $_SESSION['v_id'] = $row['v_id'];
             $_SESSION['face'] = $row['v_id'];
-            $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '');
+            $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . ((!empty($row['mname'])) ? substr($row['mname'], 0, 1) : '');
             if ($_SESSION['mypass'] === 's') {
                 header("Location:indexss.php");
             } else {

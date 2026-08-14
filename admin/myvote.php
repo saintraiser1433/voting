@@ -144,21 +144,21 @@ if (!isset($_SESSION['at'])) {
                                                                         } else {
                                                                             $pn = $rowt['party_name'];
                                                                         }
-                                                                        echo '<label class="text-primary text-uppercase">' . $rowt['lname'] . ", " . $rowt['fname'] . " " . $rowt['mname'][0] . ". (" . $pn . ')</label>';
+                                                                        echo '<label class="text-primary text-uppercase">' . $rowt['lname'] . ", " . $rowt['fname'] . " " . middle_initial($rowt['mname']) . " (" . $pn . ')</label>';
 
                                                                         $sqltt = "SELECT * FROM vote INNER JOIN voters ON vote.voter_id=voters.v_id WHERE vote.acad_id='$acad' and voters.grade_level='$gr' and voters.section='$sec' and voters.strand='$str' and vote.candidate_id = '" . $rowt['c_id'] . "'";
                                                                         $rsst = $conn->query($sqltt);
                                                                         $sq = "SELECT * FROM voters where voters.acad_id='$acad' and voters.grade_level='$gr' and voters.section='$sec' and voters.strand='$str'";
                                                                         $rpq = $conn->query($sq);
                                                                         $finalt = 0;
-                                                                        $from1 = $rsst->num_rows;
-                                                                        $to1 = $rpq->num_rows;
-                                                                        $finalt = $from1 / $to1 * 100;
+                                                                        $from1 = ($rsst) ? $rsst->num_rows : 0;
+                                                                        $to1 = ($rpq) ? $rpq->num_rows : 0;
+                                                                        $finalt = ($to1 > 0) ? ($from1 / $to1 * 100) : 0;
                                                                         $roundt = round($finalt);
                                                                         echo '
-                                                                    <br><label> ' . $rsst->num_rows . ' - Votes</label>
+                                                                    <br><label> ' . $from1 . ' - Votes</label>
                                                                     <div class="progress">
-                                                                        <div class="progress-bar progress-bar-striped progress-bar-primary" role="progressbar" style="width: ' . $roundt . '%" aria-valuenow="' . $roundt . '" aria-valuemin="0" aria-valuemax="' . $rpq->num_rows . '"></div>
+                                                                        <div class="progress-bar progress-bar-striped progress-bar-primary" role="progressbar" style="width: ' . $roundt . '%" aria-valuenow="' . $roundt . '" aria-valuemin="0" aria-valuemax="' . $to1 . '"></div>
                                                                     </div><br>';
                                                                     }
 

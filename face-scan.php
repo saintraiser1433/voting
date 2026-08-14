@@ -17,7 +17,7 @@ if ($voting_mode === 'department') {
 $result = mysqli_query($conn, $sql);
 if ($result && mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
-        $name = $row['lname'] . "," . $row['fname'] . " " . (isset($row['mname'][0]) ? $row['mname'][0] : '');
+        $name = $row['lname'] . "," . $row['fname'] . " " . middle_initial($row['mname'], '');
         $srcs[] = $name;
         $faceIdMap[$name] = $row['v_id'];
     }

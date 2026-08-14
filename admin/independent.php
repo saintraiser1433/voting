@@ -334,7 +334,7 @@ if (isset($_POST['update'])) {
                                                                                     class="rounded-circle"
                                                                                     style="width:30px;height:30px;"></td>
                                                                             <td class="text-uppercase">
-                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0]; ?>
+                                                                                <?php echo $row['lname'] . ", " . $row['fname'] . " " . middle_initial($row['mname'], ''); ?>
                                                                             </td>
                                                                             <td class="text-uppercase">
                                                                                 <?php echo $row['description'] ?>

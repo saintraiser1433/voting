@@ -34,6 +34,7 @@ $query = $conn->query($sql);
 $sql_array = array();
 $error = false;
 
+if ($query) {
 while ($row = $query->fetch_assoc()) {
     $position = slugify($row['description']);
     if (!isset($_POST[$position])) continue;
@@ -55,6 +56,7 @@ while ($row = $query->fetch_assoc()) {
             $sql_array[] = "INSERT INTO department_vote (voter_id, candidate_id, acad_id, department_id) VALUES ('$myid', '$dc_id', '$acad', '$dept_id')";
         }
     }
+}
 }
 
 if (!$error && !empty($sql_array)) {

@@ -1,16 +1,19 @@
 <?php
 include '../../connection.php';
 
+$fname = '';
+$gr = '';
+$stat = 0;
+$p = 0;
+
 if (isset($_POST['myids'])) {
     $my = $_POST['myids'];
-    $fname = "";
-    $gr = "";
 
     $sql = "SELECT * FROM voters where stud_id='$my'";
     $res = $conn->query($sql);
-    $row = $res->fetch_assoc();
-    if ($res->num_rows > 0) {
-        $fname .= $row['lname'] . ", " . $row['fname'] . " " . $row['mname'][0];
+    if ($res && $res->num_rows > 0) {
+        $row = $res->fetch_assoc();
+        $fname .= $row['lname'] . ", " . $row['fname'] . " " . middle_initial($row['mname'], '');
         $gr .= $row['grade_level'] . " " . $row['strand'] . "-" . $row['section'];
         $stat = 1;
     } else {
@@ -18,7 +21,7 @@ if (isset($_POST['myids'])) {
     }
     $sqlt = "SELECT * FROM candidate where stud_id='$my'";
     $rea = $conn->query($sqlt);
-    if ($rea->num_rows > 0) {
+    if ($rea && $rea->num_rows > 0) {
         $p = 1;
     } else {
         $p = 0;

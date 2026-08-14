@@ -6,6 +6,7 @@ if (isset($_POST['id'])) {
     $id = $_POST['id'];
     $sql = "SELECT * FROM position WHERE acad_id='$acad' and pos_id='$id'";
     $query = $conn->query($sql);
+    if ($query && $query->num_rows > 0) {
     $row = $query->fetch_assoc();
 
     $priority = $row['priority'] - 1;
@@ -18,8 +19,9 @@ if (isset($_POST['id'])) {
         $sql = "UPDATE position SET priority = '$priority' WHERE pos_id = '$id'";
         $conn->query($sql);
     }
+    }
 
-    echo json_encode($output);
+    echo json_encode(['ok' => true]);
 }
 
 ?>

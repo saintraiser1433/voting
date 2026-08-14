@@ -97,7 +97,7 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
                                             $input = ($row['max_vote'] > 1) ? '<div class="checkbox-fade fade-in-success" id="chck"><label><input type="checkbox" class="' . $slug . '" name="' . $slug . '[]" value="' . $crow['c_id'] . '" ' . $checked . '><span class="cr"><i class="cr-icon icofont icofont-ui-check txt-success"></i></span></label></div>' : '<div class="form-radio"><div class="radio radiofill radio-success radio-inline"><label class="col-form-label"><input type="radio" name="' . $slug . '" class="' . $slug . '" value="' . $crow['c_id'] . '" ' . $checked . '><i class="helper"></i></label></div></div>';
                                             $image = $crow['im'];
                                             $partyname = (isset($crow['party_name']) && $crow['party_name'] !== null) ? $crow['party_name'] : 'IND';
-                                            $m = isset($crow['mname'][0]) ? $crow['mname'][0] . '.' : '';
+                                            $m = middle_initial($crow['mname']);
                                             $candidate .= '<div class="candidate-row">' . $input . '<ul><li><img src="' . htmlspecialchars($image) . '" alt=""></li></ul><div class="candidate-name"><h3 class="text-uppercase font-weight-bold m-0" id="myh3">' . htmlspecialchars($crow['fname'] . ', ' . $crow['lname'] . ' ' . $m) . ' - <span class="text-warning text-uppercase">' . htmlspecialchars($partyname) . '</span></h3></div></div>';
                                         }
                                         }
@@ -146,7 +146,7 @@ $row = ($rs && $rs->num_rows > 0) ? $rs->fetch_assoc() : null;
         $cfgRes = $conn->query("SELECT setting_value FROM app_settings WHERE setting_key='ngrok_sync_url' LIMIT 1");
         if ($cfgRes && $cfgRes->num_rows > 0) {
             $cfgRow = $cfgRes->fetch_assoc();
-            $syncUrl = trim($cfgRow['setting_value']);
+            $syncUrl = trim($cfgRow['setting_value'] ?? '');
         }
     }
     ?>

@@ -15,6 +15,8 @@ if (isset($_POST['voters1'])) {
         $sql = "SELECT * FROM position where acad_id='$acad'";
         $query = $conn->query($sql);
         $sql_array = array();
+        $error = false;
+        if ($query) {
         while ($row = $query->fetch_assoc()) {
             $position = slugify($row['description']);
             $pos_id = $row['pos_id'];
@@ -36,6 +38,7 @@ if (isset($_POST['voters1'])) {
                 }
             }
         }
+        }
 
         if (!$error) {
             foreach ($sql_array as $sql_row) {
@@ -46,6 +49,7 @@ if (isset($_POST['voters1'])) {
             $_SESSION['response'] = 'Ballot Submitted';
             $_SESSION['type'] = 'success';
             header('Location:home.php');
+            exit;
         }
     }
 } else {

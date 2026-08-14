@@ -31,7 +31,13 @@ try {
     
     // Check for duplicate registration (first name, last name, and middle name combination)
     // Remove spaces from names for comparison (e.g., "john rey" = "johnrey")
-    $checkStmt = $conn->prepare("SELECT COUNT(*) as count FROM voters WHERE REPLACE(UPPER(TRIM(fname)), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '') AND REPLACE(UPPER(TRIM(lname)), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '') AND REPLACE(UPPER(TRIM(mname)), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '')");
+    // CONVERT avoids MySQL collation mismatch on PHP 8.2 / utf8mb4 connections
+    $checkStmt = $conn->prepare(
+        "SELECT COUNT(*) as count FROM voters
+         WHERE REPLACE(UPPER(TRIM(CONVERT(fname USING utf8mb4))), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '')
+           AND REPLACE(UPPER(TRIM(CONVERT(lname USING utf8mb4))), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '')
+           AND REPLACE(UPPER(TRIM(CONVERT(mname USING utf8mb4))), ' ', '') = REPLACE(UPPER(TRIM(?)), ' ', '')"
+    );
     $checkStmt->bind_param("sss", $fname, $lname, $mname);
     $checkStmt->execute();
     $checkResult = $checkStmt->get_result();
@@ -43,7 +49,7 @@ try {
     }
     
     // Create folder name (avoid notice if mname empty)
-    $m_initial = isset($mname[0]) ? $mname[0] : '';
+    $m_initial = ($mname !== '') ? substr($mname, 0, 1) : '';
     $fullname = $lname . "," . $fname . " " . $m_initial;
 
     $upload_dir = "../../facephoto/" . $fullname . "/";

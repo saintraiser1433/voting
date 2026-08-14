@@ -6,10 +6,11 @@ if (isset($_POST['submits'])) {
     $acad = $_SESSION['acad'];
     $sql = "SELECT * FROM voters where v_id='$username' and auth_code='$password' and acad_id='$acad'";
     $rs = $conn->query($sql);
-    $row = $rs->fetch_assoc();
-    if ($rs->num_rows > 0) {
+    if ($rs && $rs->num_rows > 0) {
+        $row = $rs->fetch_assoc();
         $_SESSION['v_id'] = $row['v_id'];
         header("Location:home.php");
+        exit;
     } else {
         $_SESSION['response'] = "Incorrect Credentials";
         $_SESSION['type'] = "danger";
