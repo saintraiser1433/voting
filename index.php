@@ -28,15 +28,16 @@ if (isset($_POST['submits'])) {
             $_SESSION['voting_mode'] = 'department';
             $_SESSION['mypass'] = (isset($_POST['myps1']) && $_POST['myps1'] !== '') ? $row['password'] : 's';
             $_SESSION['v_id'] = $row['v_id'];
-            $_SESSION['face'] = $row['v_id'];
+            $_SESSION['faceverified'] = true;
             $_SESSION['dept_id'] = $row['department_id'];
             $m = (!empty($row['mname'])) ? substr($row['mname'], 0, 1) . '.' : '';
             $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . $m;
             if ($_SESSION['mypass'] === 's') {
                 header("Location:indexss.php");
             } else {
-                header("Location:face-scan.php");
+                header("Location:department_home.php");
             }
+            exit;
         } else {
             $_SESSION['response'] = "Incorrect Credentials";
             $_SESSION['type'] = "danger";
@@ -58,13 +59,14 @@ if (isset($_POST['submits'])) {
             $_SESSION['voting_mode'] = 'general';
             $_SESSION['mypass'] = (isset($_POST['myps1']) && $_POST['myps1'] !== '') ? $row['password'] : 's';
             $_SESSION['v_id'] = $row['v_id'];
-            $_SESSION['face'] = $row['v_id'];
+            $_SESSION['faceverified'] = true;
             $_SESSION['username'] = $row['lname'] . ", " . $row['fname'] . " " . ((!empty($row['mname'])) ? substr($row['mname'], 0, 1) : '');
             if ($_SESSION['mypass'] === 's') {
                 header("Location:indexss.php");
             } else {
-                header("Location:face-scan.php");
+                header("Location:home.php");
             }
+            exit;
         } else {
             $_SESSION['response'] = "Incorrect Credentials";
             $_SESSION['type'] = "danger";

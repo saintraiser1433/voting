@@ -2,22 +2,25 @@
 include 'connection.php';
 $acad = $_SESSION['acad'];
 $cc = $_SESSION['mypass'];
-if ($_SESSION['mypass'] != 's') {
-    header("Location:face-scan.php");
-}
+$voting_mode = isset($_SESSION['voting_mode']) && $_SESSION['voting_mode'] === 'department' ? 'department' : 'general';
+$redirectAfterPassword = ($voting_mode === 'department') ? 'department_home.php' : 'home.php';
 
+if ($_SESSION['mypass'] != 's') {
+    header("Location:" . $redirectAfterPassword);
+    exit;
+}
 
 if (isset($_POST['submitsq'])) {
     $id = (int) $_POST['idhidden'];
     $password = md5($_POST['password']);
-    // Shared voters table now stores password for both general and department modes
     $sqls = "UPDATE voters SET password='$password' WHERE v_id='$id'";
     if ($conn->query($sqls)) {
-        header("Location:face-scan.php");
+        $_SESSION['mypass'] = $password;
+        $_SESSION['faceverified'] = true;
+        header("Location:" . $redirectAfterPassword);
+        exit;
     }
 }
-
-
 
 ?>
 
